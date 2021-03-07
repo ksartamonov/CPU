@@ -12,10 +12,6 @@ typedef struct {
   char* Label_Name;
 } label;
 
-typedef struct {
-  size_t number;
-  label* labels;
-} label_table;
 
 int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount);
 int CommandAssign (int* Assembled, int CMD, int PC);
@@ -364,7 +360,7 @@ int RegPop (int* Assembled, int PC, char* command)
 void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
 {
   //printf("ASS %d: ", sizeof(array));
-    for (int i = 0 ; i < SizeOfArray + 1; i ++)
+    for (int i = 0 ; i < 2*SizeOfArray; i ++)
     {
     if ( array[i] != 0)
     fprintf( assembled_cmds, "%d\n", array[i]);
