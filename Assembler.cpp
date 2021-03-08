@@ -379,7 +379,7 @@ label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, 
           Marks[LabelNum].Label_Name = command;
 
       //printf("fucking slave = %p\n", Marks[LabelNum]);
-      Marks[LabelNum].position      = pc;
+      Marks[LabelNum].position   = pc;
 
     }
   // else
