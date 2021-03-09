@@ -249,6 +249,22 @@ if ( Mod_StringCompare(command, "JNE ", 4) == 1 )
     return PC;
   }
 
+if ( Mod_StringCompare(command, "CALL :", 5) == 1 )
+  {
+    PC = CommandAssign(Assembled, CMD_CALL, PC);
+    int adress = LabelPosition(CMD_CALL, command, Marks, LabelsAmount);
+
+    *(Assembled+PC) = Marks[ adress ].position;
+    PC ++;
+    return PC;
+  }
+
+if ( Mod_StringCompare(command, "RET", 3) == 1 )
+  {
+    PC = CommandAssign(Assembled, CMD_RET, PC);
+    return PC;
+  }
+    
 return WRONG_COMMAND;
 
 }
@@ -379,7 +395,7 @@ label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, 
           Marks[LabelNum].Label_Name = command;
 
       //printf("fucking slave = %p\n", Marks[LabelNum]);
-      Marks[LabelNum].position   = pc;
+      Marks[LabelNum].position      = pc;
 
     }
   // else
@@ -403,19 +419,30 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
 {
   int length = sizeof(cmd);
   // printf("COMMAND: %s\n", cmd);
-  char* mark = (char*)calloc(length - 4, sizeof(char));
+  char* mark = (char*)calloc(length, sizeof(char));
 if ( TypeOfJump == CMD_JMP || TypeOfJump == CMD_JNE || TypeOfJump == CMD_JAE || TypeOfJump == CMD_JBE )
 {
   for (int i = 0; i < length; i ++)
   {
-    mark[i] = cmd[i+4];     //JMP :ASS
-  }                           //012345
+    mark[i] = cmd[i+4];     //CALL :ASS
+    printf("MARK: %s\n", mark);
+  }                         //01234567
+
 }
 if ( TypeOfJump == CMD_JE || TypeOfJump == CMD_JA || TypeOfJump == CMD_JB )
 {
   for (int i = 0; i < length; i ++)
   {
     mark[i] = cmd[i+3];     //JMP :ASS
+    //printf("MARK: %s\n", mark);
+  }
+}
+
+if (TypeOfJump == CMD_CALL)
+{
+  for (int i = 0; i < length; i ++)
+  {
+    mark[i] = cmd[i+5];
   }
 }
   // printf("Label Name  %s\n", mark);
