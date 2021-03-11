@@ -1,12 +1,4 @@
-/*
-В этом файле с помощью дефайна определить тип дефайна, включить stack.h
- После команды include  убираем дефайн #undef
 
-Дальше опять дефайним другой тип и опять инклюдим stack.h, тогда получаем
-двойную компилцию файла (при первой подстановке -- одного типа,
-при второй -- другого)
-
-*/
 
 #include "commands.h"
 #include "CPU.h"
@@ -21,6 +13,8 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
   CPU_t* Processor = (CPU_t*)calloc(1, sizeof(CPU_t));
 
   Stack_First_Init(10, &(Processor->stk));
+  Stack_First_Init(10, &(Processor->callstk));
+
 
   FILE* f = fopen(argv[1], "r");
 
@@ -29,8 +23,6 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
   char* buf = ReadFile(argv[1]);
 
   int Lines_Amount = CounterOfLines(buf, SizeOfFile);
-
-  printf("[debug]LINES AMOUNT: %d\n", Lines_Amount);
 
   char** P_Lines = (char**) calloc (Lines_Amount, sizeof (char*));
 
@@ -44,10 +36,6 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
   {
     cmds[idx] = atoi(P_Lines[idx]);
   }
-
-  // for (int idx = 0; idx < Lines_Amount; idx++)
-  // {
-  //   printf("commands[%d] = %d\n", idx, cmds[idx]);
 
   Walk(cmds, Lines_Amount, Processor);
 
@@ -64,11 +52,13 @@ void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
 
     assert(asm_cmds != NULL);
 
-    while (asm_cmds[PC] != CMD_HLT && PC != ArraySize)
+    while (asm_cmds[i] != CMD_HLT)
     {
       printf("PC = %d\n", PC);
+      i++;
       PC = Command_Performer (asm_cmds[PC], asm_cmds[PC+1], PC, prc);
     }
+
 
     printf("All operations are done! Processor stopped!\n");
 
@@ -174,12 +164,21 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
     pc++;
   }
 
-  if ( cmd1 == CMD_JMP || cmd1 == CMD_JB || cmd1 == CMD_JBE || cmd1 == CMD_JA || cmd1 == CMD_JAE || cmd1 == CMD_JE || cmd1 == CMD_JNE)
+  if ( cmd1 == CMD_JMP || cmd1 == CMD_JB || cmd1 == CMD_JBE || cmd1 == CMD_JA || cmd1 == CMD_JAE || cmd1 == CMD_JE || cmd1 == CMD_JNE )
   {
-    pc = DO_JUMP(cmd1, cmd2, prc, pc);
+    pc = DO_JUMP(cmd1, cmd2, prc, pc) + 1;
   }
 
+  if ( cmd1 == CMD_CALL)
+  {
+    pc = DO_JUMP(cmd1, cmd2, prc, pc) + 1;
+    DO_CALLSTACK_PUSH(prc, pc);
+  }
 
+  if ( cmd1 == CMD_RET)
+  {
+    Stack_Pop(prc->callstk, &pc);
+  }
   return pc;
 
 }
