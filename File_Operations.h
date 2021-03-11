@@ -1,20 +1,11 @@
 #ifndef FILE_OPERATIONS_H
 #define FILE_OPERATIONS_H
 
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <ctype.h>
-#include <assert.h>
-#include "commands.h"
-
+#include "Standart_Libriaries.h"
 
 long int GetSize(FILE* fp);
 size_t CounterOfLines (char* buffer, long  size);
 char* ReadFile(const char* name);
-//void PutPointers (char* text, int size_text, char** P_Lines, int NumberOfLines);
 int StringToNumber (char* string);
 void PutPointers (char* buffer, int size, char** strings, int num_str);
 
@@ -35,8 +26,8 @@ long int GetSize(FILE* fp)
 
 size_t CounterOfLines (char* buffer, long  size)
 {
-  assert (buffer);
-  assert (size);
+  assert (buffer != NULL);
+  assert (size != 0);
 
   size_t count = 0, flag = 0;
 
@@ -65,7 +56,7 @@ size_t CounterOfLines (char* buffer, long  size)
 char* ReadFile(const char* name)
 {
 
-    assert(name);
+    assert(name != NULL);
 
     FILE* fp = fopen(name, "r");
     char* buffer = nullptr;
@@ -85,27 +76,7 @@ char* ReadFile(const char* name)
 }
 
 //------------------------------------------------------------------------------
-/*
-void PutPointers (char* text, int size_text, char** P_Lines, int NumberOfLines)
-{
-    int i = 0, IsNewLine = 0, k = 0;
 
-    assert (text != NULL);
-
-    for (i = 0; i < size_text + 1; i++)
-    {
-        if (!isspace(text[i]) && IsNewLine == 0 && isalpha(text [i]))
-        {
-	         P_Lines[k] = &text[i];
-            k++;
-            IsNewLine = 1;
-        }
-
-	      if (text[i] == '\n')
-	          IsNewLine = 0;
-    }
-}
-*/
 void PutPointers (char* buffer, int size, char** strings, int num_str)
 {
   assert (strings);
@@ -140,62 +111,8 @@ void PutPointers (char* buffer, int size, char** strings, int num_str)
   }
 }
 
-/*
-int ReadToIntArray (char* text, int* array, int CharsAmount)
-{
-  int j = 0, i = 0;
-  char val[256] = {0};
-  int value = 0;
-  while (i < CharsAmount)
-  {
-    if ( text[i] == 1 )
-    {
-      if ( text[i+1] == CMD_PUSH - 10)
-            {
-              array[j] = CMD_PUSH;
-
-              i = i + 2;
-              while (!isspace(text[i]))
-              {
-                val[i - 2] = text[i];
-                i++;
-              }
-
-              value = atoi(val);
-            }
-
-      if ( text[i+1] == CMD_PUSH_RAX - 10)
-                array[j] = CMD_PUSH_RAX;
-
-      if ( text[i+1] == CMD_PUSH_RBX - 10)
-                array[j] = CMD_PUSH_RBX;
-
-      if ( text[i+1] == CMD_PUSH_RCX - 10)
-                array[j] = CMD_PUSH_RCX;
-
-      if ( text[i+1] == CMD_PUSH_RDX - 10)
-                array[j] = CMD_PUSH_RDX;
-
-      if ( text[i+1] == CMD_POP_RAX - 10)
-                array[j] = CMD_POP_RAX;
-
-      if ( text[i+1] == CMD_POP_RBX - 10)
-                array[j] = CMD_POP_RBX;
-
-      if ( text[i+1] == CMD_POP_RCX - 10)
-                array[j] = CMD_POP_RCX;
-
-      if ( text[i+1] == CMD_POP_RDX - 10)
-                array[j] = CMD_POP_RDX;
-
-      i++;
-    }
-  }
-}
 //------------------------------------------------------------------------------
-int Pusher(int CMD, )
-//------------------------------------------------------------------------------
-*/
+
 int GetNumberOfLines(char* buffer){
 
     int counter = 0;
