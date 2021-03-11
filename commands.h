@@ -3,6 +3,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+
 #include "CPU.h"
 #include "Stack.h"
 
@@ -15,26 +16,24 @@ enum Commands {
   CMD_MUL      = 6,  // Multiplies pre-last and the last elements
   CMD_FSQRT    = 7,  // calculates the square root of the last element
   CMD_OUT      = 8,  // prints the stack's top element
-              CMD_JMP     = 30,  // To loop the operations
+  CMD_JMP     = 30,  // To loop the operations
   CMD_HLT      = 64, // stops preprocessor
-  //CMD_END      = -1,  // quits the program
-  //CMD_REG_PUSH = 11,
-  CMD_PUSH_RAX = 12,
-  CMD_PUSH_RBX = 13,
-  CMD_PUSH_RCX = 14,
-  CMD_PUSH_RDX = 15,
-  CMD_POP_RAX  = 16,
-  CMD_POP_RBX  = 17,
-  CMD_POP_RCX  = 18,
-  CMD_POP_RDX  = 19,
-  CMD_JB       = 31,
-  CMD_JBE      = 32,
-  CMD_JA       = 33,
-  CMD_JAE      = 34,
-  CMD_JE       = 35,
-  CMD_JNE      = 36,
-  CMD_CALL     = 40,
-  CMD_RET      = 50
+  CMD_PUSH_RAX = 12, // pushes rax into stack
+  CMD_PUSH_RBX = 13, // pushes rbx into stack
+  CMD_PUSH_RCX = 14, // pushes rcx into stack
+  CMD_PUSH_RDX = 15, // // pushes rdx into stack
+  CMD_POP_RAX  = 16, // pops to rax from stack
+  CMD_POP_RBX  = 17, // pops to rbx from stack
+  CMD_POP_RCX  = 18, // pops to rcx from stack
+  CMD_POP_RDX  = 19, // pops to rdx from stack
+  CMD_JB       = 31, // jump if below
+  CMD_JBE      = 32, // jump if equal or below
+  CMD_JA       = 33, //
+  CMD_JAE      = 34, //
+  CMD_JE       = 35, //
+  CMD_JNE      = 36, //
+  CMD_CALL     = 40, // Jumps to fuction and uses callstack
+  CMD_RET      = 50  // returns to position from callstack
 };
 
 
@@ -194,13 +193,6 @@ int DO_OUT (CPU_t* proc)
 
 //------------------------------------------------------------------------------
 
-// int DO_HLT (CPU_t* proc)
-// {
-//   printf("Programm stopped!\n");
-//   //abort();
-// }
-
-//------------------------------------------------------------------------------
 
 int DO_REG_PUSH (CPU_t* proc, int rx)
 {
@@ -292,7 +284,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
     case CMD_JB:
         {
-          if (proc->stk->size < 2 ) printf("ERROR: Not enough elements in stack!\n");
+          if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
           Stack_Pop(proc->stk, &(El_1));
           Stack_Pop(proc->stk, &(El_2));
           if (El_1 < El_2)
@@ -303,7 +295,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
     case CMD_JBE:
         {
-          if (proc->stk->size < 2 ) printf("ERROR: Not enough elements in stack!\n");
+          if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
           Stack_Pop(proc->stk, &(El_1));
           Stack_Pop(proc->stk, &(El_2));
           if (El_1 <= El_2)
@@ -314,7 +306,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
     case CMD_JA:
           {
-            if (proc->stk->size < 2 ) printf("ERROR: Not enough elements in stack!\n");
+            if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
             Stack_Pop(proc->stk, &(El_1));
             Stack_Pop(proc->stk, &(El_2));
             if (El_1 > El_2)
@@ -325,7 +317,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
     case CMD_JAE:
           {
-            if (proc->stk->size < 2 ) printf("ERROR: Not enough elements in stack!\n");
+            if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
             Stack_Pop(proc->stk, &(El_1));
             Stack_Pop(proc->stk, &(El_2));
             if (El_1 >= El_2)
@@ -336,7 +328,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
     case CMD_JE:
           {
-            if (proc->stk->size < 2 ) printf("ERROR: Not enough elements in stack!\n");
+            if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
             Stack_Pop(proc->stk, &(El_1));
             Stack_Pop(proc->stk, &(El_2));
             if (El_1 == El_2)
@@ -347,7 +339,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
     case CMD_JNE:
           {
-            if (proc->stk->size < 2 ) printf("ERROR: Not enough elements in stack!\n");
+            if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
             Stack_Pop(proc->stk, &(El_1));
             Stack_Pop(proc->stk, &(El_2));
             if (El_1 != El_2)
@@ -365,12 +357,15 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
   return IP;
 }
 
+//------------------------------------------------------------------------------
+
 int DO_CALLSTACK_PUSH (CPU_t* proc, int IP)
 {
   assert(proc->callstk != NULL);
   Stack_Push(proc->callstk, IP);
   return 1;
 }
+
 //------------------------------------------------------------------------------
 
 
