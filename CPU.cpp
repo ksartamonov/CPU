@@ -1,5 +1,4 @@
 
-
 #include "commands.h"
 #include "CPU.h"
 
@@ -23,6 +22,8 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
   char* buf = ReadFile(argv[1]);
 
   int Lines_Amount = CounterOfLines(buf, SizeOfFile);
+
+  printf("[debug]LINES AMOUNT: %d\n", Lines_Amount);
 
   char** P_Lines = (char**) calloc (Lines_Amount, sizeof (char*));
 
@@ -48,19 +49,18 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 
 void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
 {
-    int PC = 0, new_PC = 0, i = 0;
+  assert (asm_cmds != NULL);
+  assert (prc != NULL);
 
-    assert(asm_cmds != NULL);
+  int PC = 0, new_PC = 0;
 
-    while (asm_cmds[i] != CMD_HLT)
+  while (asm_cmds[PC] != CMD_HLT)
     {
       printf("PC = %d\n", PC);
-      i++;
       PC = Command_Performer (asm_cmds[PC], asm_cmds[PC+1], PC, prc);
     }
 
-
-    printf("All operations are done! Processor stopped!\n");
+  printf("All operations are done! Processor stopped!\n");
 
 }
 
@@ -68,117 +68,61 @@ void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
 
 int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
 {
+  assert (prc != NULL);
+
   if ( cmd1 == CMD_PUSH)
   {
     DO_PUSH(prc, cmd2);
-    pc += 2;
+    pc ++ ;
   }
 
-  if ( cmd1 == CMD_POP_RAX )
-  {
-   DO_REG_POP (prc, CMD_POP_RAX);
-    pc ++;
-  }
-
-  if ( cmd1 == CMD_POP_RBX )
-  {
-   DO_REG_POP (prc, CMD_POP_RBX);
-    pc ++;
-  }
-
-  if ( cmd1 == CMD_POP_RCX )
-  {
-   DO_REG_POP (prc, CMD_POP_RCX);
-    pc ++;
-  }
-
-  if ( cmd1 == CMD_POP_RDX )
-  {
-   DO_REG_POP (prc, CMD_POP_RDX);
-    pc ++;
-  }
+  if ( cmd1 == CMD_POP_RAX || cmd1 == CMD_POP_RBX || cmd1 == CMD_POP_RCX  || cmd1 == CMD_POP_RDX )
+        DO_REG_POP (prc, cmd1);
 
   if (cmd1 == CMD_ADD)
-  {
-   DO_ADD (prc);
-    pc++;
-  }
+        DO_ADD (prc);
 
   if (cmd1 == CMD_SUB)
-  {
-   DO_SUB (prc);
-    pc++;
-  }
+        DO_SUB (prc);
 
   if (cmd1 == CMD_DIV)
-  {
-   DO_DIV (prc);
-    pc++;
-  }
+        DO_DIV (prc);
 
   if (cmd1 == CMD_IN)
-  {
-   DO_IN (prc);
-    pc++;
-  }
+        DO_IN (prc);
 
   if (cmd1 == CMD_MUL)
-  {
-   DO_MUL (prc);
-    pc++;
-  }
+        DO_MUL (prc);
 
   if (cmd1 == CMD_FSQRT)
-  {
-   DO_FSQRT (prc);
-    pc++;
-  }
+        DO_FSQRT (prc);
 
   if (cmd1 == CMD_OUT)
-  {
-   DO_OUT (prc);
-    pc++;
-  }
+        DO_OUT (prc);
 
-  if ( cmd1 == CMD_PUSH_RAX )
-  {
-   DO_REG_POP (prc, CMD_PUSH_RAX);
-    pc++;
-  }
-
-  if ( cmd1 == CMD_PUSH_RBX )
-  {
-   DO_REG_POP (prc, CMD_PUSH_RBX);
-    pc++;
-  }
-
-  if ( cmd1 == CMD_PUSH_RCX )
-  {
-   DO_REG_POP (prc, CMD_PUSH_RCX);
-    pc++;
-  }
-
-  if ( cmd1 == CMD_PUSH_RDX )
-  {
-   DO_REG_POP (prc, CMD_PUSH_RDX);
-    pc++;
-  }
+  if ( cmd1 == CMD_PUSH_RAX || cmd1 == CMD_PUSH_RBX || cmd1 == CMD_PUSH_RCX || CMD_PUSH_RDX)
+        DO_REG_PUSH (prc, cmd1);
 
   if ( cmd1 == CMD_JMP || cmd1 == CMD_JB || cmd1 == CMD_JBE || cmd1 == CMD_JA || cmd1 == CMD_JAE || cmd1 == CMD_JE || cmd1 == CMD_JNE )
   {
     pc = DO_JUMP(cmd1, cmd2, prc, pc) + 1;
+    return pc;
   }
 
   if ( cmd1 == CMD_CALL)
   {
     pc = DO_JUMP(cmd1, cmd2, prc, pc) + 1;
     DO_CALLSTACK_PUSH(prc, pc);
+    return pc;
   }
 
   if ( cmd1 == CMD_RET)
   {
     Stack_Pop(prc->callstk, &pc);
+    return pc;
   }
+  
+  pc++;
   return pc;
 
 }
