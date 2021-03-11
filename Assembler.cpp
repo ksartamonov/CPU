@@ -1,7 +1,7 @@
 #include "Standart_Libriaries.h"
 
 #include "File_Operations.h"
-//#include "commands.h"
+
 
 #define WRONG_COMMAND -69
 
@@ -29,6 +29,10 @@ int Labels_Amount(char** P_Lines, int Lines_Amount);
 
 int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
 {
+  assert(P_Lines != NULL);
+  assert(Assembled != NULL);
+  assert(Labels != NULL);
+
   int PC = 0;
 
   for (int i = 0; i < Lines_Amount; i ++)
@@ -37,11 +41,9 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
     int new_PC = Command_Coder( P_Lines[i], Arr_Size, Assembled, PC, Labels, NLabels);
     if (new_PC == WRONG_COMMAND)
           printf("Wrong command on the %d position: %d\n", PC, P_Lines[i]);
-    else{
-    //else PC = Command_Coder( P_Lines[i], Arr_Size, Assembled, PC, Labels, NLabels);
-      PC = new_PC;
-      //printf("%d\n", PC);  // pc = PC + 1;
-    }
+    else
+          PC = new_PC;
+
   }
   return Assembled;
 }
@@ -50,8 +52,6 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
 int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 {
-  //printf("argv[1] = %s\n", argv[1]);
-  //return 1;
   if ( argc < 2 ) printf("ERROR: Not enough arguments!\n");
 
   FILE* f = fopen(argv[1], "r");
@@ -62,64 +62,34 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   int Lines_Amount = CounterOfLines(buf, SizeOfFile);
 
-   printf("[debug]LINES AMOUNT: %d\n", Lines_Amount);
-
   char** P_Lines = (char**) calloc (Lines_Amount, sizeof (char*));
-
   assert(P_Lines != NULL);
-
-  //printf("[debug]P_LINES size = %d\n", sizeof(P_Lines));
-
 
   PutPointers (buf, SizeOfFile, P_Lines, Lines_Amount);
 
   int* Assembled = (int*)calloc(2*Lines_Amount, sizeof(int));
-
   assert(Assembled != NULL);
-
-
 
   int NumLabels = Labels_Amount(P_Lines, Lines_Amount);
 
-  //printf("[       debug        ] NumLabels = %d\n", NumLabels);
-
-  //if ( NumLabels > 0 )
-  //{
   label* Labels = (label*)calloc(NumLabels, sizeof(label));
   assert (Labels != NULL);
 
-  // for (int i = 0; i < NumLabels ; i ++)
-  // {
-  //   printf("[debug] Label #%d\n position: %d\nname: %s\n", i, Labels[i].position, Labels[i].Label_Name);
-  // }
 
   Labels = Labels_Finding(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
 
-  // for (int i = 0; i < NumLabels ; i ++)
-  // {
-  //   printf("[debug] Label #%d\n position: %d\nname: %s\n", i, Labels[i].position, Labels[i].Label_Name);
-  // }
-
-  assert(Assembled != NULL);
-
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
-
-  printf("[debug] Assembled:\n");
-  for (int i = 0; i < 2*Lines_Amount; i ++)
-      printf("%d \n", Assembled[i]);
 
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.txt", "w");
 
   int Arr_Size = sizeof(Assembled);
-
-  //printf("[debug] ARRAY_SIZE: %d\n", Arr_Size);
 
   AssembledDump (Assembled, ASSEMBLED_CMDS, Arr_Size);
 
   free(P_Lines);
   free(Assembled);
 
-  printf("Assembled successfully\n FROM: %s \n INTO: assembled_cmds.txt\n", argv[1]);
+  printf("Assembled successfully!\n FROM: %s \n INTO: assembled_cmds.txt\n", argv[1]);
   return 0;
 }
 
@@ -127,6 +97,10 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
 int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount) //PC -- указатель на следующий пустой элемент кодированного массива
 {
+  assert(command != NULL);
+  assert(Assembled != NULL);
+  assert(Marks != NULL);
+
 if ( Mod_StringCompare(command, "PUSH r", 6) == 1 )
   {
     PC = RegPush (Assembled, PC, command);
@@ -182,8 +156,6 @@ if ( Mod_StringCompare(command, "JMP ", 4) == 1 )
   {
     PC = CommandAssign(Assembled, CMD_JMP, PC);
     int adress = LabelPosition(CMD_JMP, command, Marks, LabelsAmount);
-    //printf("ADRESS: %d\n", adress);
-    //printf("POS: %d\n", Marks[ adress ].position);
     *(Assembled+PC) = Marks[ adress ].position;
     PC ++;
     return PC;
@@ -193,7 +165,6 @@ if ( Mod_StringCompare(command, "JB ", 3) == 1 )
   {
     PC = CommandAssign(Assembled, CMD_JB, PC);
     int adress = LabelPosition(CMD_JB, command, Marks, LabelsAmount);
-
     *(Assembled+PC) = Marks[ adress ].position;
     PC ++;
     return PC;
@@ -264,44 +235,26 @@ if ( Mod_StringCompare(command, "RET", 3) == 1 )
     PC = CommandAssign(Assembled, CMD_RET, PC);
     return PC;
   }
-    
+
 return WRONG_COMMAND;
 
 }
 
-/*if ( Mod_StringCompare(command, "IN", 2) == 1 )
-{
-*(Assembled + PC) = CMD_IN;
-PC++;
-printf("Enter the in value:\n");
-int x = scanf("%d", &x);
-*(Assembled + PC + 1) = x;
-PC++;
-return PC;
-}
-*/
 
 //------------------------------------------------------------------------------
 
 int Mod_StringCompare (char* string1, char* string2, int Comparing_Length)
 {
-
-  //printf("Comparing %s and %s up to %d:\n", string1, string2, Comparing_Length);
   if (Comparing_Length > strlen(string1) || Comparing_Length > strlen(string2))
   {
-    //printf("Troubles with length\n");
     return -1;
   }
 
   for ( int i = 0; i < Comparing_Length ; i ++)
   {
     if ( tolower(string1[i]) != tolower(string2[i]) )
-    {
-      //printf("%s != %s up to %d\n", string1, string2, Comparing_Length);
-      return  0;
-    }
+        return  0;
   }
-  //printf("%s == %s up to %d !!!!!!!!!!!!!!!!!!\n", string1, string2, Comparing_Length);
   return 1;
 }
 
@@ -326,21 +279,22 @@ int CommandPush (int* Assembled, int PC, int Length, char* command)
   }
   int a  = atoi (val);
 
-  //printf("[debug] Pushing_val = %d\n", a);
-
   *(Assembled + PC) = CMD_PUSH;
   *(Assembled + PC+1) = a;
 
-PC+=2;
+  PC+=2;
 
-free (val);
-return PC;
+  free (val);
+  return PC;
 }
 
 //------------------------------------------------------------------------------
 
 int RegPush (int* Assembled, int PC, char* command)
 {
+  assert (Assembled != NULL);
+  assert (command != NULL);
+
   if ( Mod_StringCompare(command, "PUSH rax", 8) == 1 )
       *(Assembled + PC) = CMD_PUSH_RAX;
   if ( Mod_StringCompare(command, "PUSH rbx", 8) == 1 )
@@ -358,6 +312,9 @@ int RegPush (int* Assembled, int PC, char* command)
 
 int RegPop (int* Assembled, int PC, char* command)
 {
+  assert(Assembled != NULL);
+  assert(command != NULL);
+
   if ( Mod_StringCompare(command, "POP rax", 7) == 1 )
       *(Assembled + PC) = CMD_POP_RAX;
   if ( Mod_StringCompare(command, "POP rbx", 7) == 1 )
@@ -375,7 +332,8 @@ int RegPop (int* Assembled, int PC, char* command)
 
 void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
 {
-  //printf("ASS %d: ", sizeof(array));
+  assert (array != NULL);
+
     for (int i = 0 ; i < 2*SizeOfArray; i ++)
     {
     if ( array[i] != 0)
@@ -387,8 +345,11 @@ void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
 
 label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, label* Marks, int pc) //PC -- указатель на следующий пустой элемент кодированного массива
 {
+  assert (command != NULL);
+  assert (Assembled != NULL);
+  assert (Marks != NULL);
+
   int length = sizeof(command);
-  //int flag = 1
   if ( Mod_StringCompare(command, ":", 1) == 1 )
     {
       for ( int i = 0; i < length; i ++)
@@ -407,6 +368,8 @@ label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, 
 
 int IsMark (char* command, int LabelsAmount)
 {
+  assert (command != NULL);
+
   int length = sizeof(command);
   if ( Mod_StringCompare(command, ":", 1) == 1 )
   LabelsAmount++;
@@ -418,34 +381,34 @@ int IsMark (char* command, int LabelsAmount)
 int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
 {
   int length = sizeof(cmd);
-  // printf("COMMAND: %s\n", cmd);
+
   char* mark = (char*)calloc(length, sizeof(char));
-if ( TypeOfJump == CMD_JMP || TypeOfJump == CMD_JNE || TypeOfJump == CMD_JAE || TypeOfJump == CMD_JBE )
-{
-  for (int i = 0; i < length; i ++)
-  {
-    mark[i] = cmd[i+4];     //CALL :ASS
-    printf("MARK: %s\n", mark);
-  }                         //01234567
 
-}
-if ( TypeOfJump == CMD_JE || TypeOfJump == CMD_JA || TypeOfJump == CMD_JB )
-{
-  for (int i = 0; i < length; i ++)
+  if ( TypeOfJump == CMD_JMP || TypeOfJump == CMD_JNE || TypeOfJump == CMD_JAE || TypeOfJump == CMD_JBE )
   {
-    mark[i] = cmd[i+3];     //JMP :ASS
-    //printf("MARK: %s\n", mark);
+    for (int i = 0; i < length; i ++)
+    {
+      mark[i] = cmd[i+4];
+      printf("MARK: %s\n", mark);
+    }
   }
-}
 
-if (TypeOfJump == CMD_CALL)
-{
-  for (int i = 0; i < length; i ++)
+  if ( TypeOfJump == CMD_JE || TypeOfJump == CMD_JA || TypeOfJump == CMD_JB )
   {
-    mark[i] = cmd[i+5];
+    for (int i = 0; i < length; i ++)
+    {
+      mark[i] = cmd[i+3];
+    }
   }
-}
-  // printf("Label Name  %s\n", mark);
+
+  if (TypeOfJump == CMD_CALL)
+  {
+    for (int i = 0; i < length; i ++)
+    {
+      mark[i] = cmd[i+5];
+    }
+  }
+
   for (int pos = 0; pos < LabelsAmount; pos ++)
   {
     if ( Mod_StringCompare(Labels[pos].Label_Name, mark, sizeof(cmd) - 4) == 1)
@@ -456,6 +419,7 @@ if (TypeOfJump == CMD_CALL)
 
   free(mark);
   printf("ERROR: Could not find a label\n");
+
   return -1;
 }
 
@@ -463,6 +427,9 @@ if (TypeOfJump == CMD_CALL)
 
 label* Labels_Finding(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
 {
+  assert (P_Lines != NULL);
+  assert (Assembled != NULL);
+  assert (Labels != NULL);
 
   int LabelNum = 0;
 
