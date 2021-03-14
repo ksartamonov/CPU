@@ -40,6 +40,7 @@ enum Commands {
 int DO_PUSH (CPU_t* proc, int value) // PUSH x
 {
   assert(proc != NULL);
+  printf("PUSHING VALUE %d\n", value);
   Stack_Push((proc->stk), value);
   return 1;
 }
@@ -48,6 +49,8 @@ int DO_PUSH (CPU_t* proc, int value) // PUSH x
 
 int DO_ADD (CPU_t* proc)
 {
+  assert(proc != NULL);
+
   if ((proc->stk->stack_size) < 2 )
   {
   printf("ERROR: Not enough elements in stack\n");
@@ -57,8 +60,8 @@ int DO_ADD (CPU_t* proc)
   int Last = 0;
   int PreLast = 0;
 
-  Stack_Pop((proc->stk), &Last);
-  Stack_Pop((proc->stk), &PreLast);
+  Last    = Stack_Pop((proc->stk), &Last);
+  PreLast = Stack_Pop((proc->stk), &PreLast);
 
   int sum = Last + PreLast;
 
@@ -70,6 +73,8 @@ int DO_ADD (CPU_t* proc)
 
 int DO_SUB (CPU_t* proc)
 {
+  assert(proc != NULL);
+
   if ((proc->stk->stack_size) < 2 )
   {
   printf("ERROR: Not enough elements in stack\n");
@@ -79,8 +84,8 @@ int DO_SUB (CPU_t* proc)
   int Last = 0;
   int PreLast = 0;
 
-  Stack_Pop((proc->stk), &Last);
-  Stack_Pop((proc->stk), &PreLast);
+  Last    = Stack_Pop((proc->stk), &Last);
+  PreLast = Stack_Pop((proc->stk), &PreLast);
 
   int sub = PreLast - Last;
 
@@ -92,6 +97,8 @@ int DO_SUB (CPU_t* proc)
 
 int DO_DIV (CPU_t* proc)
 {
+  assert(proc != NULL);
+
   if ((proc->stk->stack_size) < 2 )
   {
   printf("ERROR: Not enough elements in stack\n");
@@ -101,8 +108,8 @@ int DO_DIV (CPU_t* proc)
   int Last = 0;
   int PreLast = 0;
 
-  Stack_Pop((proc->stk), &Last);
-  Stack_Pop((proc->stk), &PreLast);
+  Last = Stack_Pop((proc->stk), &Last);
+  PreLast = Stack_Pop((proc->stk), &PreLast);
 
   int div = PreLast / Last;
   int rem = PreLast % Last;
@@ -117,6 +124,8 @@ int DO_DIV (CPU_t* proc)
 
 int DO_MUL (CPU_t* proc)
 {
+  assert(proc != NULL);
+
   if ((proc->stk->stack_size) < 2 )
   {
   printf("ERROR: Not enough elements in stack\n");
@@ -126,8 +135,8 @@ int DO_MUL (CPU_t* proc)
   int Last = 0;
   int PreLast = 0;
 
-  Stack_Pop((proc->stk), &Last);
-  Stack_Pop((proc->stk), &PreLast);
+  Last    = Stack_Pop((proc->stk), &Last);
+  PreLast = Stack_Pop((proc->stk), &PreLast);
 
   int mul = PreLast / Last;
 
@@ -139,6 +148,8 @@ int DO_MUL (CPU_t* proc)
 
 int DO_IN (CPU_t* proc)
 {
+  assert(proc != NULL);
+
   printf("Enter the value in console:\n");
   int x = 0;
   if (scanf("%d", &x) != 1)
@@ -155,6 +166,8 @@ int DO_IN (CPU_t* proc)
 
 int DO_FSQRT(CPU_t* proc)
 {
+  assert(proc != NULL);
+
   if ((proc->stk->stack_size) < 1 )
   {
   printf("ERROR: Not enough elements in stack\n");
@@ -162,7 +175,7 @@ int DO_FSQRT(CPU_t* proc)
   }
 
   int Last = 0;
-  Stack_Pop((proc->stk), &Last);
+  Last = Stack_Pop((proc->stk), &Last);
 
   Last = sqrt(Last);
 
@@ -175,15 +188,17 @@ int DO_FSQRT(CPU_t* proc)
 
 int DO_OUT (CPU_t* proc)
 {
+  assert(proc != NULL);
+
   if ((proc->stk->stack_size) < 1 )
   {
   printf("ERROR: Not enough elements in stack\n");
   return -1;
   }
 
-  int Last = 0;
-  Stack_Pop((proc->stk), &Last);
+  int Last = 666;
 
+  Last = Stack_Pop((proc->stk), &Last);
   printf("Top element: %d\n", Last);
 
   Stack_Push((proc->stk), Last);
@@ -196,6 +211,8 @@ int DO_OUT (CPU_t* proc)
 
 int DO_REG_PUSH (CPU_t* proc, int rx)
 {
+  assert(proc != NULL);
+
   switch(rx){
 
   case CMD_PUSH_RAX:
@@ -230,6 +247,7 @@ int DO_REG_PUSH (CPU_t* proc, int rx)
 
 int DO_REG_POP (CPU_t* proc, int rx)
 {
+  assert(proc != NULL);
 
   if ((proc->stk->stack_size) < 1 )
   {
@@ -241,25 +259,25 @@ int DO_REG_POP (CPU_t* proc, int rx)
 
   case CMD_POP_RAX:
         {
-          Stack_Pop (proc->stk, &(proc->rax) );
+          proc->rax = Stack_Pop (proc->stk, &(proc->rax) );
           return 1;
         }
 
   case CMD_POP_RBX:
         {
-          Stack_Pop((proc->stk), (&(proc->rbx)));
+          proc->rbx = Stack_Pop((proc->stk), (&(proc->rbx)));
           return 1;
         }
 
   case CMD_POP_RCX:
         {
-          Stack_Pop((proc->stk), (&(proc->rbx)));
+          proc->rcx = Stack_Pop((proc->stk), (&(proc->rbx)));
           return 1;
         }
 
   case CMD_POP_RDX:
         {
-          Stack_Pop((proc->stk), (&(proc->rdx)));
+          proc->rdx = Stack_Pop((proc->stk), (&(proc->rdx)));
           return 1;
         }
   default:
@@ -271,6 +289,7 @@ int DO_REG_POP (CPU_t* proc, int rx)
 
 int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 {
+  assert(proc != NULL);
 
   int El_1 = 0, El_2 = 0;
 
@@ -285,8 +304,8 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_JB:
         {
           if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
-          Stack_Pop(proc->stk, &(El_1));
-          Stack_Pop(proc->stk, &(El_2));
+          El_1 = Stack_Pop(proc->stk, &(El_1));
+          El_2 = Stack_Pop(proc->stk, &(El_2));
           if (El_1 < El_2)
                 IP = JumpAdress;
 
@@ -296,8 +315,8 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_JBE:
         {
           if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
-          Stack_Pop(proc->stk, &(El_1));
-          Stack_Pop(proc->stk, &(El_2));
+          El_1 = Stack_Pop(proc->stk, &(El_1));
+          El_2 = Stack_Pop(proc->stk, &(El_2));
           if (El_1 <= El_2)
                 IP = JumpAdress;
 
@@ -307,8 +326,8 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_JA:
           {
             if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
-            Stack_Pop(proc->stk, &(El_1));
-            Stack_Pop(proc->stk, &(El_2));
+            El_1 = Stack_Pop(proc->stk, &(El_1));
+            El_2 = Stack_Pop(proc->stk, &(El_2));
             if (El_1 > El_2)
                   IP = JumpAdress;
 
@@ -318,8 +337,8 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_JAE:
           {
             if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
-            Stack_Pop(proc->stk, &(El_1));
-            Stack_Pop(proc->stk, &(El_2));
+            El_1 = Stack_Pop(proc->stk, &(El_1));
+            El_2 = Stack_Pop(proc->stk, &(El_2));
             if (El_1 >= El_2)
                   IP = JumpAdress;
 
@@ -329,8 +348,8 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_JE:
           {
             if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
-            Stack_Pop(proc->stk, &(El_1));
-            Stack_Pop(proc->stk, &(El_2));
+            El_1 = Stack_Pop(proc->stk, &(El_1));
+            El_2 = Stack_Pop(proc->stk, &(El_2));
             if (El_1 == El_2)
                   IP = JumpAdress;
 
@@ -340,8 +359,8 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_JNE:
           {
             if (proc->stk->stack_size < 2 ) printf("ERROR: Not enough elements in stack!\n");
-            Stack_Pop(proc->stk, &(El_1));
-            Stack_Pop(proc->stk, &(El_2));
+            El_1 = Stack_Pop(proc->stk, &(El_1));
+            El_2 = Stack_Pop(proc->stk, &(El_2));
             if (El_1 != El_2)
                   IP = JumpAdress;
 
@@ -361,7 +380,9 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
 
 int DO_CALLSTACK_PUSH (CPU_t* proc, int IP)
 {
+  assert(proc != NULL);
   assert(proc->callstk != NULL);
+
   Stack_Push(proc->callstk, IP);
   return 1;
 }
