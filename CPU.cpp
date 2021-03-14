@@ -23,8 +23,6 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 
   int Lines_Amount = CounterOfLines(buf, SizeOfFile);
 
-  printf("[debug]LINES AMOUNT: %d\n", Lines_Amount);
-
   char** P_Lines = (char**) calloc (Lines_Amount, sizeof (char*));
 
   assert(P_Lines != NULL);
@@ -40,6 +38,7 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 
   Walk(cmds, Lines_Amount, Processor);
 
+  printf("All operations from %s are done! Processor stopped!\n", argv[1]);
   return 0;
 }
 
@@ -56,11 +55,8 @@ void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
 
   while (asm_cmds[PC] != CMD_HLT)
     {
-      printf("PC = %d\n", PC);
       PC = Command_Performer (asm_cmds[PC], asm_cmds[PC+1], PC, prc);
     }
-
-  printf("All operations are done! Processor stopped!\n");
 
 }
 
@@ -118,10 +114,10 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
 
   if ( cmd1 == CMD_RET)
   {
-    Stack_Pop(prc->callstk, &pc);
+    pc = Stack_Pop(prc->callstk, &pc);
     return pc;
   }
-  
+
   pc++;
   return pc;
 
