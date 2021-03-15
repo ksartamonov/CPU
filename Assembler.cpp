@@ -236,6 +236,7 @@ if ( Mod_StringCompare(command, "RET", 3) == 1 )
     return PC;
   }
 
+
 return WRONG_COMMAND;
 
 }
@@ -355,12 +356,10 @@ label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, 
       for ( int i = 0; i < length; i ++)
           Marks[LabelNum].Label_Name = command;
 
-      //printf("fucking slave = %p\n", Marks[LabelNum]);
       Marks[LabelNum].position      = pc;
 
     }
-  // else
-  //     printf("blyat\n");
+
   return Marks;
 }
 
@@ -389,7 +388,6 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
     for (int i = 0; i < length; i ++)
     {
       mark[i] = cmd[i+4];
-      printf("MARK: %s\n", mark);
     }
   }
 
