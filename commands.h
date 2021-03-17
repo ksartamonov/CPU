@@ -40,7 +40,6 @@ enum Commands {
 int DO_PUSH (CPU_t* proc, int value) // PUSH x
 {
   assert(proc != NULL);
-  printf("PUSHING VALUE %d\n", value);
   Stack_Push((proc->stk), value);
   return 1;
 }
