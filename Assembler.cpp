@@ -70,10 +70,13 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   int* Assembled = (int*)calloc(2*Lines_Amount, sizeof(int));
   assert(Assembled != NULL);
 
+
+
   int NumLabels = Labels_Amount(P_Lines, Lines_Amount);
 
   label* Labels = (label*)calloc(NumLabels, sizeof(label));
   assert (Labels != NULL);
+
 
 
   Labels = Labels_Finding(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
@@ -82,9 +85,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.txt", "w");
 
-  int Arr_Size = sizeof(Assembled);
-
-  AssembledDump (Assembled, ASSEMBLED_CMDS, Arr_Size);
+  AssembledDump (Assembled, ASSEMBLED_CMDS, Lines_Amount);
 
   free(P_Lines);
   free(Assembled);
