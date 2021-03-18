@@ -50,7 +50,8 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
   }
   if (Errors_amount > 0)
   {
-  printf("%d errors generated.\n", Errors_amount);
+  if (Errors_amount == 1) printf("1 error generated.\n");
+  if (Errors_amount >  1) printf("%d errors generated.\n", Errors_amount);
   abort();
   }
   return Assembled;
