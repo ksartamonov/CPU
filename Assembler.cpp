@@ -89,15 +89,6 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   Labels = Finding_Labels(P_Lines, Lines_Amount, Labels, NumLabels);
 
-  // for (int i = 0 ; i < NumLabels; i ++)
-  // {
-  //   printf("-_-_-_-_-_-_-_-_\n");
-  //   printf("LABEL[%d]\n", i);
-  //   printf("NAME = %s\n", Labels[i].name);
-  //   printf("ADRESS = %d\n", Labels[i].position);
-  //   printf("-_-_-_-_-_-_-_-_\n");
-  // }
-
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
 
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.txt", "w");
@@ -106,8 +97,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   free(P_Lines);
   free(Assembled);
-
-  printf("Assembled successfully!\n FROM: %s \n INTO: assembled_cmds.txt\n", argv[1]);
+  std::cout << "\x1b[36;1mAssembled successfully!\nFROM: \x1b[0m" << argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.txt\n";
   return 0;
 }
 
