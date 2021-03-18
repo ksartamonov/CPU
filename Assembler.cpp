@@ -1,30 +1,29 @@
 #include "Standart_Libriaries.h"
-
+#include <iostream>
 #include "File_Operations.h"
 
 
 #define WRONG_COMMAND -69
-
+#define COULD_NOT_DISASSEMBLE -777
 #define ASSEMBLED_SUCCESFULLY -420
 
 typedef struct {
   int position;
-  char* Label_Name;
+  char* name;
 } label;
 
 
-int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount);
-int CommandAssign (int* Assembled, int CMD, int PC);
-int CommandPush (int* Assembled, int PC, int Length, char* command);
-int RegPush (int* Assembled, int PC, char* command);
-int RegPop (int* Assembled, int PC, char* command);
-void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray);
-int IsMark (char* commandl, int LabelsAmount);
-label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, label* Marks, int pc); //PC -- указатель на следующий пустой элемент кодированного массива
-int LabelPosition (int TypeOfJump, char* cmd, label* Labels, int LabelsAmount);
+int Command_Coder     (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount);
+int CommandAssign     (int* Assembled, int CMD, int PC);
+int CommandPush       (int* Assembled, int PC, int Length, char* command);
+int RegPush           (int* Assembled, int PC, char* command);
+int RegPop            (int* Assembled, int PC, char* command);
+void AssembledDump    (int* array, FILE* assembled_cmds, int SizeOfArray);
+int Labels_Amount     (char** P_Lines, int Lines_Amount);
+label* PutMarks       (char* command, int* Assembled, int LabelsAmount, int LabelNum, label* Marks, int pc); //PC -- указатель на следующий пустой элемент кодированного массива
+int LabelPosition     (int TypeOfJump, char* cmd, label* Labels, int LabelsAmount);
 int Mod_StringCompare (char* string1, char* string2, int Comparing_Length);
-label* Labels_Finding(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels);
-int Labels_Amount(char** P_Lines, int Lines_Amount);
+label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount);
 
 
 int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
@@ -33,17 +32,26 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
   assert(Assembled != NULL);
   assert(Labels != NULL);
 
-  int PC = 0;
+  int PC = 0, Errors_amount = 0;
 
   for (int i = 0; i < Lines_Amount; i ++)
   {
     size_t Arr_Size = sizeof(P_Lines[i]);
     int new_PC = Command_Coder( P_Lines[i], Arr_Size, Assembled, PC, Labels, NLabels);
+
     if (new_PC == WRONG_COMMAND)
-          printf("Wrong command on the %d position: %d\n", PC, P_Lines[i]);
+      {
+        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mWrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i << "\x1b[1m line!\n\x1b[0m";
+        Errors_amount++;
+      }
     else
           PC = new_PC;
 
+  }
+  if (Errors_amount > 0)
+  {
+  printf("%d errors generated.\n", Errors_amount);
+  abort();
   }
   return Assembled;
 }
@@ -52,7 +60,11 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
 int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 {
-  if ( argc < 2 ) printf("ERROR: Not enough arguments!\n");
+  if ( argc < 2 )
+  {
+    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNot enough arguments!\n\x1b[0m";
+    abort();
+  }
 
   FILE* f = fopen(argv[1], "r");
 
@@ -70,16 +82,21 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   int* Assembled = (int*)calloc(2*Lines_Amount, sizeof(int));
   assert(Assembled != NULL);
 
-
-
   int NumLabels = Labels_Amount(P_Lines, Lines_Amount);
 
   label* Labels = (label*)calloc(NumLabels, sizeof(label));
   assert (Labels != NULL);
 
+  Labels = Finding_Labels(P_Lines, Lines_Amount, Labels, NumLabels);
 
-
-  Labels = Labels_Finding(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
+  // for (int i = 0 ; i < NumLabels; i ++)
+  // {
+  //   printf("-_-_-_-_-_-_-_-_\n");
+  //   printf("LABEL[%d]\n", i);
+  //   printf("NAME = %s\n", Labels[i].name);
+  //   printf("ADRESS = %d\n", Labels[i].position);
+  //   printf("-_-_-_-_-_-_-_-_\n");
+  // }
 
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
 
@@ -343,38 +360,6 @@ void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
     }
 }
 
-//------------------------------------------------------------------------------
-
-label* PutMarks (char* command, int* Assembled, int LabelsAmount, int LabelNum, label* Marks, int pc) //PC -- указатель на следующий пустой элемент кодированного массива
-{
-  assert (command != NULL);
-  assert (Assembled != NULL);
-  assert (Marks != NULL);
-
-  int length = sizeof(command);
-  if ( Mod_StringCompare(command, ":", 1) == 1 )
-    {
-      for ( int i = 0; i < length; i ++)
-          Marks[LabelNum].Label_Name = command;
-
-      Marks[LabelNum].position      = pc;
-
-    }
-
-  return Marks;
-}
-
-//------------------------------------------------------------------------------
-
-int IsMark (char* command, int LabelsAmount)
-{
-  assert (command != NULL);
-
-  int length = sizeof(command);
-  if ( Mod_StringCompare(command, ":", 1) == 1 )
-  LabelsAmount++;
-  return LabelsAmount;
-}
 
 //------------------------------------------------------------------------------
 
@@ -410,7 +395,7 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
 
   for (int pos = 0; pos < LabelsAmount; pos ++)
   {
-    if ( Mod_StringCompare(Labels[pos].Label_Name, mark, sizeof(cmd) - 4) == 1)
+    if ( Mod_StringCompare(Labels[pos].name, mark, sizeof(cmd) - 4) == 1)
     {
       return  pos;
     }
@@ -422,32 +407,42 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
   return -1;
 }
 
+
 //------------------------------------------------------------------------------
 
-label* Labels_Finding(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
+label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount)
 {
-  assert (P_Lines != NULL);
-  assert (Assembled != NULL);
-  assert (Labels != NULL);
-
-  int LabelNum = 0;
-
-  for (int l = 0; l < Lines_Amount; l ++)
+  int l = 0, Label_Num = 0, cmd_idx = 0;
+  while (l != Lines_Amount)
   {
-    Labels = PutMarks(P_Lines[l], Assembled, NLabels, LabelNum, Labels, l);
-    if (Labels[LabelNum].position > 0) LabelNum++;
+    if ( Mod_StringCompare(P_Lines[l], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[l], "J", 1) == 1 || Mod_StringCompare(P_Lines[l], "CALL", 4) == 1 )
+          cmd_idx++;
+    if ( Mod_StringCompare(P_Lines[l], ":", 1) == 1 )
+          {
+            Labels[Label_Num].position = cmd_idx;
+            Labels[Label_Num].name     = P_Lines[l];
+            Label_Num++;
+            cmd_idx++;
+          }
+    cmd_idx++;
+    l++;
   }
   return Labels;
 }
 
 //------------------------------------------------------------------------------
 
-int Labels_Amount(char** P_Lines, int Lines_Amount)
+int Labels_Amount ( char** P_Lines, int Lines_Amount)
 {
-  int NLabels = 0;
-  for (int l = 0; l < Lines_Amount; l ++)
+  int Labels_Amount = 0;
+
+  for (int i = 0; i < Lines_Amount; i++)
   {
-    NLabels = IsMark (P_Lines[l], NLabels);
+    if ( Mod_StringCompare(P_Lines[i], ":", 1) == 1 )
+          Labels_Amount++;
   }
-  return NLabels;
+
+  return Labels_Amount;
 }
+
+//------------------------------------------------------------------------------
