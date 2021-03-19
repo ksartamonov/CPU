@@ -2,7 +2,6 @@
 #include <iostream>
 #include "File_Operations.h"
 
-
 #define WRONG_COMMAND -69
 #define COULD_NOT_DISASSEMBLE -777
 #define ASSEMBLED_SUCCESFULLY -420
@@ -11,7 +10,6 @@ typedef struct {
   int position;
   char* name;
 } label;
-
 
 int Command_Coder     (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount);
 int CommandAssign     (int* Assembled, int CMD, int PC);
@@ -41,7 +39,7 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
     if (new_PC == WRONG_COMMAND)
       {
-        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mWrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i << "\x1b[1m line!\n\x1b[0m";
+        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mWrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i + 1<< "\x1b[1m line!\n\x1b[0m";
         Errors_amount++;
       }
     else
@@ -57,7 +55,7 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
   return Assembled;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 {
@@ -90,7 +88,18 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   Labels = Finding_Labels(P_Lines, Lines_Amount, Labels, NumLabels);
 
+  for (int i = 0 ; i < NumLabels; i++)
+  {
+    printf("LABEL[%d] = %d\n", i, Labels[i]);
+  }
+
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
+
+  for (int i = 0 ; i < 2*Lines_Amount; i ++)
+  {
+    printf("Assembled[%d] = %d\n", i, Assembled[i]);
+  }
+
 
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.txt", "w");
 
@@ -98,17 +107,23 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   free(P_Lines);
   free(Assembled);
-  std::cout << "\x1b[36;1mAssembled successfully!\nFROM: \x1b[0m" << argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.txt\n";
+  std::cout << "\x1b[32;1mAssembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM:\x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.txt\n";
   return 0;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount) //PC -- указатель на следующий пустой элемент кодированного массива
 {
   assert(command != NULL);
   assert(Assembled != NULL);
   assert(Marks != NULL);
+
+if ( Mod_StringCompare(command, ":", 1) == 1 )
+  {
+    //PC++;
+    return PC;
+  }
 
 if ( Mod_StringCompare(command, "PUSH r", 6) == 1 )
   {
@@ -122,11 +137,6 @@ if ( Mod_StringCompare(command, "POP r", 5) == 1 )
     return PC;
   }
 
-if ( Mod_StringCompare(command, ":", 1) == 1 )
-  {
-    //PC++;
-    return PC;
-  }
 
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
   {   PC = CommandPush (Assembled, PC, Length, command); return PC; }
@@ -250,8 +260,7 @@ return WRONG_COMMAND;
 
 }
 
-
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int Mod_StringCompare (char* string1, char* string2, int Comparing_Length)
 {
@@ -268,7 +277,7 @@ int Mod_StringCompare (char* string1, char* string2, int Comparing_Length)
   return 1;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int CommandAssign (int* Assembled, int CMD, int PC)
 {
@@ -277,7 +286,7 @@ int CommandAssign (int* Assembled, int CMD, int PC)
   return PC;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int CommandPush (int* Assembled, int PC, int Length, char* command)
 {
@@ -298,7 +307,7 @@ int CommandPush (int* Assembled, int PC, int Length, char* command)
   return PC;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int RegPush (int* Assembled, int PC, char* command)
 {
@@ -318,7 +327,7 @@ int RegPush (int* Assembled, int PC, char* command)
   return PC;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int RegPop (int* Assembled, int PC, char* command)
 {
@@ -338,7 +347,7 @@ int RegPop (int* Assembled, int PC, char* command)
   return PC;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
 {
@@ -351,8 +360,7 @@ void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
     }
 }
 
-
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
 {
@@ -398,8 +406,7 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
   return -1;
 }
 
-
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount)
 {
@@ -413,7 +420,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
             Labels[Label_Num].position = cmd_idx;
             Labels[Label_Num].name     = P_Lines[l];
             Label_Num++;
-            cmd_idx++;
+            //cmd_idx++;
           }
     cmd_idx++;
     l++;
@@ -421,7 +428,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
   return Labels;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int Labels_Amount ( char** P_Lines, int Lines_Amount)
 {
@@ -436,4 +443,4 @@ int Labels_Amount ( char** P_Lines, int Lines_Amount)
   return Labels_Amount;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
