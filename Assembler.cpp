@@ -5,6 +5,7 @@
 #define WRONG_COMMAND -69
 #define COULD_NOT_DISASSEMBLE -777
 #define ASSEMBLED_SUCCESFULLY -420
+#define NEED_MORE_ARGUMENTS -13
 
 typedef struct {
   int position;
@@ -22,6 +23,7 @@ label* PutMarks       (char* command, int* Assembled, int LabelsAmount, int Labe
 int LabelPosition     (int TypeOfJump, char* cmd, label* Labels, int LabelsAmount);
 int Mod_StringCompare (char* string1, char* string2, int Comparing_Length);
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount);
+int CheckPush(char* command);
 
 
 int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
@@ -39,13 +41,21 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
     if (new_PC == WRONG_COMMAND)
       {
-        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mWrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i + 1<< "\x1b[1m line!\n\x1b[0m";
+        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mwrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i + 1<< "\x1b[1m line!\n\x1b[0m";
         Errors_amount++;
       }
+
+    if (new_PC == WRONG_COMMAND)
+      {
+        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mpush needs 2 arguments: \x1b[0m" <<"\x1b[1mon the \x1b[0m" << i + 1 << "\x1b[1m line!\n\x1b[0m";
+        Errors_amount++;
+      }
+
     else
           PC = new_PC;
 
   }
+
   if (Errors_amount > 0)
   {
   if (Errors_amount == 1) printf("1 error generated.\n");
@@ -88,17 +98,17 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   Labels = Finding_Labels(P_Lines, Lines_Amount, Labels, NumLabels);
 
-  for (int i = 0 ; i < NumLabels; i++)
-  {
-    printf("LABEL[%d] = %d\n", i, Labels[i]);
-  }
+  // for (int i = 0 ; i < NumLabels; i++)
+  // {
+  //   printf("LABEL[%d] = %d\n", i, Labels[i]);
+  // }
 
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
 
-  for (int i = 0 ; i < 2*Lines_Amount; i ++)
-  {
-    printf("Assembled[%d] = %d\n", i, Assembled[i]);
-  }
+  // for (int i = 0 ; i < 2*Lines_Amount; i ++)
+  // {
+  //   printf("Assembled[%d] = %d\n", i, Assembled[i]);
+  // }
 
 
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.txt", "w");
@@ -107,7 +117,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   free(P_Lines);
   free(Assembled);
-  std::cout << "\x1b[32;1mAssembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM:\x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.txt\n";
+  std::cout << "\x1b[32;1mAssembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.txt\n";
   return 0;
 }
 
@@ -139,7 +149,9 @@ if ( Mod_StringCompare(command, "POP r", 5) == 1 )
 
 
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
-  {   PC = CommandPush (Assembled, PC, Length, command); return PC; }
+  { //if (CheckPush(command) < 0) return NEED_MORE_ARGUMENTS;
+    PC = CommandPush (Assembled, PC, Length, command);
+    return PC; }
 
 if ( Mod_StringCompare(command, "ADD", 3) == 1 )
   {   PC = CommandAssign(Assembled, CMD_ADD, PC); return PC;   }
@@ -413,16 +425,28 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
   int l = 0, Label_Num = 0, cmd_idx = 0;
   while (l != Lines_Amount)
   {
-    if ( Mod_StringCompare(P_Lines[l], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[l], "J", 1) == 1 || Mod_StringCompare(P_Lines[l], "CALL", 4) == 1 )
-          cmd_idx++;
+    if (Mod_StringCompare(P_Lines[l], "PUSH R", 6) == 1 )
+    {
+      cmd_idx++;
+      l++;
+      continue;
+    }
+
     if ( Mod_StringCompare(P_Lines[l], ":", 1) == 1 )
-          {
-            Labels[Label_Num].position = cmd_idx;
-            Labels[Label_Num].name     = P_Lines[l];
-            Label_Num++;
-            //cmd_idx++;
-          }
-    cmd_idx++;
+      {
+        Labels[Label_Num].position = cmd_idx;
+        Labels[Label_Num].name     = P_Lines[l];
+        Label_Num++;
+      }
+
+    else
+      {
+        if ( Mod_StringCompare(P_Lines[l], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[l], "J", 1) == 1 || Mod_StringCompare(P_Lines[l], "CALL", 4) == 1 )
+        { cmd_idx++; }
+
+        cmd_idx++;
+      }
+
     l++;
   }
   return Labels;
