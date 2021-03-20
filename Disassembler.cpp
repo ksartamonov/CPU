@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "Standart_Libriaries.h"
 #include "commands.h"
 #include "File_Operations.h"
@@ -6,46 +6,29 @@
 #define WRONG_COMMAND -69
 #define DISASSEMBLED_SUCCESFULLY -2002
 
-int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels, int cmd_nmbr);
-int IsLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels, int cmd_nmbr);
+int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels);
+int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels);
+int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount);
 
 //------------------------------------------------------------------------------
 
-int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands)
+int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount)
 {
-  int PC = 0, label_idx = 0;
-
-  int* Labels = (int*)calloc( NumberOfcommands, sizeof(int) );
+  int PC = 0;
 
   assert(Labels != NULL);
   assert(disassembled_cmds != NULL);
 
-  for (int com_num = 0; com_num < NumberOfcommands; com_num++)
+
+  while (PC !=  NumberOfcommands && Commands[PC] != 0)
   {
-    if ( Commands[com_num] == CMD_JMP || Commands[com_num] == CMD_JB || Commands[com_num] == CMD_JBE || Commands[com_num] == CMD_JA || Commands[com_num] == CMD_JAE || Commands[com_num] == CMD_JE || Commands[com_num] == CMD_JNE || Commands[com_num] == CMD_CALL)
-    {
-      Labels[label_idx] = Commands[com_num + 1];
-      label_idx++;
-    }
-  }
+    PC = Command_Decoder(Commands[PC], Commands[PC+1], disassembled_cmds, PC, Labels_Amount, Labels);
+    // if (PC == WRONG_COMMAND)
+    //       {
+    //       printf("Wrong command %d\n",Commands[PC]);
+    //       abort();
+    //     }
 
-  int LabelsNum = label_idx; //  Присваиваем кличество меток  последнему значению счетчика
-
-  int com_num = 0;
-  while (PC < NumberOfcommands)
-  {
-    int new_PC = Command_Decoder(Commands[PC], Commands[PC+1], disassembled_cmds, PC, LabelsNum, Labels, com_num);
-
-    com_num++; // переход к следующей команде
-
-    if (new_PC == WRONG_COMMAND)
-          {
-          printf("Wrong command on the %d position: %d\n", PC, Commands[PC]);
-          PC++;
-        }
-
-    else
-          PC = new_PC;
   }
 
   return DISASSEMBLED_SUCCESFULLY;
@@ -56,8 +39,17 @@ int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands)
 
 int main(int argc, char* argv [])
 {
-  if ( argc < 2 ) { printf("ERROR: Not enough arguments!\n"); return -1; }
+  if ( argc < 2 )
+  {
+    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNot enough arguments!\n\x1b[0m";
+    abort();
+  }
 
+  if (strcmp(argv[1],"assembled_cmds.aks") != 0)
+  {
+    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNeed the file \x1b[0m" << "\x1b[33;1m| assembled_cmds.aks | \x1b[0m" << "\x1b[1m to disassemble!\n\x1b[0m";
+    abort();
+  }
   FILE* f = fopen(argv[1], "r");
 
   long int SizeOfFile = GetSize(f);
@@ -79,21 +71,36 @@ int main(int argc, char* argv [])
     cmds[idx] = atoi(P_Lines[idx]);
   }
 
+  int label_idx = 0;
+
+  int* Labels = (int*) calloc( Lines_Amount, sizeof(int) );
+
+
+  for (int l = 0; l < Lines_Amount; l++)
+  {
+    if ( cmds[l] == CMD_JMP || cmds[l] == CMD_JB || cmds[l] == CMD_JBE || cmds[l] == CMD_JA || cmds[l] == CMD_JAE || cmds[l] == CMD_JE || cmds[l] == CMD_JNE || cmds[l] == CMD_CALL)
+    {
+      Labels[label_idx] = cmds[l + 1];
+      label_idx++;
+    }
+  }
+
+  int labels_amount = label_idx;
+
   FILE* DISASSEMBLED_CMDS = fopen("disassembled_cmds.txt", "w");
 
-  if ( DisAssemble(cmds, DISASSEMBLED_CMDS, Lines_Amount) == DISASSEMBLED_SUCCESFULLY)
-        printf("Disassembled successfully!\n FROM: %s \n INTO: disassembled_cmds.txt\n", argv[1]);
+  if ( DisAssemble(cmds, DISASSEMBLED_CMDS, Lines_Amount + labels_amount, Labels, labels_amount) == DISASSEMBLED_SUCCESFULLY)
+        std::cout << "\x1b[32;1mDisassembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " disassembled_cmds.txt\n";
 
   return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels, int cmd_nmbr)
+int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels)
 {
-int cur_PC = PC;
 
-int lab_num = IsLabel(PC, disassembled_cmds, LabelsAmount, Labels, cmd_nmbr);
+  PrintLabel(PC, disassembled_cmds, LabelsAmount, Labels);
 
   if ( cmd1 == CMD_PUSH )
   {
@@ -230,11 +237,11 @@ int lab_num = IsLabel(PC, disassembled_cmds, LabelsAmount, Labels, cmd_nmbr);
 
 //------------------------------------------------------------------------------
 
-int IsLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels, int cmd_nmbr)
+int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels)
 {
   for (int i = 0; i < LabelsAmount; i ++)
   {
-    if (Labels[i] == cmd_nmbr)
+    if (Labels[i] == PC)
     {
       fprintf(disassembled_cmds, ":%d\n", Labels[i]);
       return i;
