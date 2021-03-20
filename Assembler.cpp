@@ -98,26 +98,16 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   Labels = Finding_Labels(P_Lines, Lines_Amount, Labels, NumLabels);
 
-  // for (int i = 0 ; i < NumLabels; i++)
-  // {
-  //   printf("LABEL[%d] = %d\n", i, Labels[i]);
-  // }
-
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
 
-  // for (int i = 0 ; i < 2*Lines_Amount; i ++)
-  // {
-  //   printf("Assembled[%d] = %d\n", i, Assembled[i]);
-  // }
 
-
-  FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.txt", "w");
+  FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.aks", "w");
 
   AssembledDump (Assembled, ASSEMBLED_CMDS, Lines_Amount);
 
   free(P_Lines);
   free(Assembled);
-  std::cout << "\x1b[32;1mAssembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.txt\n";
+  std::cout << "\x1b[32;1mAssembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.aks\n";
   return 0;
 }
 
@@ -131,7 +121,6 @@ int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Mar
 
 if ( Mod_StringCompare(command, ":", 1) == 1 )
   {
-    //PC++;
     return PC;
   }
 
@@ -151,7 +140,9 @@ if ( Mod_StringCompare(command, "POP r", 5) == 1 )
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
   { //if (CheckPush(command) < 0) return NEED_MORE_ARGUMENTS;
     PC = CommandPush (Assembled, PC, Length, command);
-    return PC; }
+    if (!isdigit(command[5])) return WRONG_COMMAND;
+    return PC;
+  }
 
 if ( Mod_StringCompare(command, "ADD", 3) == 1 )
   {   PC = CommandAssign(Assembled, CMD_ADD, PC); return PC;   }
@@ -326,17 +317,17 @@ int RegPush (int* Assembled, int PC, char* command)
   assert (Assembled != NULL);
   assert (command != NULL);
 
-  if ( Mod_StringCompare(command, "PUSH rax", 8) == 1 )
-      *(Assembled + PC) = CMD_PUSH_RAX;
-  if ( Mod_StringCompare(command, "PUSH rbx", 8) == 1 )
-      *(Assembled + PC) = CMD_PUSH_RBX;
-  if ( Mod_StringCompare(command, "PUSH rcx", 8) == 1 )
-      *(Assembled + PC) = CMD_PUSH_RCX;
-  if ( Mod_StringCompare(command, "PUSH rdx", 8) == 1 )
-      *(Assembled + PC) = CMD_PUSH_RDX;
 
-  PC++;
-  return PC;
+  if ( Mod_StringCompare(command, "PUSH rax", 8) == 1 )
+    {  *(Assembled + PC) = CMD_PUSH_RAX;  PC++; return PC; }
+  if ( Mod_StringCompare(command, "PUSH rbx", 8) == 1 )
+    {  *(Assembled + PC) = CMD_PUSH_RBX;  PC++; return PC; }
+  if ( Mod_StringCompare(command, "PUSH rcx", 8) == 1 )
+    {  *(Assembled + PC) = CMD_PUSH_RCX;   PC++; return PC; }
+  if ( Mod_StringCompare(command, "PUSH rdx", 8) == 1 )
+    {  *(Assembled + PC) = CMD_PUSH_RDX;   PC++; return PC; }
+
+  return WRONG_COMMAND;
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -347,16 +338,15 @@ int RegPop (int* Assembled, int PC, char* command)
   assert(command != NULL);
 
   if ( Mod_StringCompare(command, "POP rax", 7) == 1 )
-      *(Assembled + PC) = CMD_POP_RAX;
+    {  *(Assembled + PC) = CMD_POP_RAX; PC++; return PC; }
   if ( Mod_StringCompare(command, "POP rbx", 7) == 1 )
-      *(Assembled + PC) = CMD_POP_RBX;
+    {  *(Assembled + PC) = CMD_POP_RBX; PC++; return PC; }
   if ( Mod_StringCompare(command, "POP rcx", 7) == 1 )
-      *(Assembled + PC) = CMD_POP_RCX;
+    {  *(Assembled + PC) = CMD_POP_RCX; PC++; return PC; }
   if ( Mod_StringCompare(command, "POP rdx", 7) == 1 )
-      *(Assembled + PC) = CMD_POP_RDX;
+    {  *(Assembled + PC) = CMD_POP_RDX; PC++; return PC; }
 
-  PC++;
-  return PC;
+  return WRONG_COMMAND;
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
