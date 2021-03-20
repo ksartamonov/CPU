@@ -45,15 +45,15 @@ enum ERROR{
 
 struct Stack{
 
-    long int CANNARY1 = 0;
-    int minimal_capacity = 0;
-    int capacity = 0;
-    int stack_size = 0;
-    StackElement* data = nullptr;
-    int struct_hash = 0;
-    int data_hash = 0;
-    long int CANNARY2 = 0;
-    int EXISTS = 0;
+    long int CANNARY1;
+    int minimal_capacity;
+    int capacity;
+    int stack_size;
+    StackElement* data;
+    int struct_hash;
+    int data_hash;
+    long int CANNARY2;
+    int EXISTS;
 };
 
 
