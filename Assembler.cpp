@@ -21,9 +21,9 @@ void AssembledDump    (int* array, FILE* assembled_cmds, int SizeOfArray);
 int Labels_Amount     (char** P_Lines, int Lines_Amount);
 label* PutMarks       (char* command, int* Assembled, int LabelsAmount, int LabelNum, label* Marks, int pc); //PC -- указатель на следующий пустой элемент кодированного массива
 int LabelPosition     (int TypeOfJump, char* cmd, label* Labels, int LabelsAmount);
-int Mod_StringCompare (char* string1, char* string2, int Comparing_Length);
+int Mod_StringCompare (const char* string1, const char* string2, int Comparing_Length);
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount);
-int CheckPush(char* command);
+int CheckPush         (char* command);
 
 
 int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
@@ -265,7 +265,7 @@ return WRONG_COMMAND;
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Mod_StringCompare (char* string1, char* string2, int Comparing_Length)
+int Mod_StringCompare (const char* string1,const char* string2, int Comparing_Length)
 {
   if (Comparing_Length > strlen(string1) || Comparing_Length > strlen(string2))
   {
@@ -274,7 +274,7 @@ int Mod_StringCompare (char* string1, char* string2, int Comparing_Length)
 
   for ( int i = 0; i < Comparing_Length ; i ++)
   {
-    if ( tolower(string1[i]) != tolower(string2[i]) )
+    if ( (string1[i]) != (string2[i]) )
         return  0;
   }
   return 1;
