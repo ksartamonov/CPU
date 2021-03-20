@@ -96,7 +96,7 @@ void PutPointers (char* buffer, int size, char** strings, int num_str)
   for (size_t num_count = 0; num_count < num_str; num_count++)
   {
     move_ptr = 0;
-    for (buf_count = 0; buf_count < size; buf_count++)
+    for (buf_count; buf_count < size; buf_count++)
     {
       if ( isspace(buffer[buf_count])  && flag_2 == 0)
       {
