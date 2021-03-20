@@ -1,12 +1,19 @@
 #ifndef FILE_OPERATIONS_H
 #define FILE_OPERATIONS_H
 
-#include "Standart_Libriaries.h"
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h>
+#include <assert.h>
+#include "commands.h"
+
 
 long int GetSize(FILE* fp);
 size_t CounterOfLines (char* buffer, long  size);
 char* ReadFile(const char* name);
-int StringToNumber (char* string);
 void PutPointers (char* buffer, int size, char** strings, int num_str);
 
 
@@ -26,8 +33,8 @@ long int GetSize(FILE* fp)
 
 size_t CounterOfLines (char* buffer, long  size)
 {
-  assert (buffer != NULL);
-  assert (size != 0);
+  assert (buffer);
+  assert (size);
 
   size_t count = 0, flag = 0;
 
@@ -89,7 +96,7 @@ void PutPointers (char* buffer, int size, char** strings, int num_str)
   for (size_t num_count = 0; num_count < num_str; num_count++)
   {
     move_ptr = 0;
-    for (buf_count; buf_count < size; buf_count++)
+    for (buf_count = 0; buf_count < size; buf_count++)
     {
       if ( isspace(buffer[buf_count])  && flag_2 == 0)
       {
@@ -112,16 +119,5 @@ void PutPointers (char* buffer, int size, char** strings, int num_str)
 }
 
 //------------------------------------------------------------------------------
-
-int GetNumberOfLines(char* buffer){
-
-    int counter = 0;
-    for (int i = 0; buffer[i] != '\0'; i++){
-        if (buffer[i] == '\n')
-            counter++;
-    }
-    return counter;
-}
-
 
 #endif // FILE_OPERATIONS_H
