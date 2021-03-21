@@ -122,7 +122,7 @@ int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Mar
 
 if ( Mod_StringCompare(command, ":", 1) == 1 )
   {
-    PC++;
+    //PC++;
     return PC;
   }
 
@@ -359,9 +359,10 @@ void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
 
     for (int i = 0 ; i < 2*SizeOfArray; i ++)
     {
-    if ( array[i] != 0 )
-          fprintf( assembled_cmds, "%d\n", array[i]);
+      if ( (array[i] != 0) || (array[i] == 0 && array[i+1] != 0 && array[i-1] != 0) )
+      fprintf( assembled_cmds, "%d\n", array[i]);
     }
+
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -415,33 +416,33 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
 
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount)
 {
-  int l = 0, Label_Num = 0, cmd_idx = 0;
-  while (l != Lines_Amount)
+  int i = 0, Label_Num = 0, cmd_idx = 0;
+  while (i != Lines_Amount)
   {
-    if (Mod_StringCompare(P_Lines[l], "PUSH R", 6) == 1 )
+    if (Mod_StringCompare(P_Lines[i], "PUSH R", 6) == 1 )
     {
       cmd_idx++;
-      l++;
+      i++;
       continue;
     }
 
-    if ( Mod_StringCompare(P_Lines[l], ":", 1) == 1 )
+    if ( Mod_StringCompare(P_Lines[i], ":", 1) == 1 )
       {
         Labels[Label_Num].position = cmd_idx;
-        printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[l]);
-        Labels[Label_Num].name     = P_Lines[l];
+        printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[i]);
+        Labels[Label_Num].name     = P_Lines[i];
         Label_Num++;
       }
 
     else
       {
-        if ( Mod_StringCompare(P_Lines[l], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[l], "J", 1) == 1 || Mod_StringCompare(P_Lines[l], "CALL", 4) == 1 )
+        if ( Mod_StringCompare(P_Lines[i], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[i], "J", 1) == 1 || Mod_StringCompare(P_Lines[i], "CALL", 4) == 1 )
         { cmd_idx++; }
 
         cmd_idx++;
       }
 
-    l++;
+    i++;
   }
   return Labels;
 }
@@ -460,3 +461,5 @@ int Labels_Amount ( char** P_Lines, int Lines_Amount)
 
   return Labels_Amount;
 }
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
