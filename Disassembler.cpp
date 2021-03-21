@@ -88,10 +88,10 @@ int main(int argc, char* argv [])
 
   int labels_amount = label_idx;
 
-  FILE* DISASSEMBLED_CMDS = fopen("disassembled_cmds.txt", "w");
+  FILE* DISASSEMBLED_CMDS = fopen("disassembled_cmds.aks", "w");
 
   if ( DisAssemble(cmds, DISASSEMBLED_CMDS, Lines_Amount + labels_amount, Labels, labels_amount) == DISASSEMBLED_SUCCESFULLY)
-        std::cout << "\x1b[32;1mDisassembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " disassembled_cmds.txt\n";
+        std::cout << "\x1b[32;1mDisassembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " disassembled_cmds.aks\n";
 
   return 0;
 }
