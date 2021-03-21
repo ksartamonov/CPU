@@ -182,7 +182,7 @@ if ( Mod_StringCompare(command, "JMP ", 4) == 1 )
   {
     PC = CommandAssign(Assembled, CMD_JMP, PC);
     int adress = LabelPosition(CMD_JMP, command, Marks, LabelsAmount);
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -191,7 +191,7 @@ if ( Mod_StringCompare(command, "JB ", 3) == 1 )
   {
     PC = CommandAssign(Assembled, CMD_JB, PC);
     int adress = LabelPosition(CMD_JB, command, Marks, LabelsAmount);
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -201,7 +201,7 @@ if ( Mod_StringCompare(command, "JBE ", 4) == 1 )
     PC = CommandAssign(Assembled, CMD_JBE, PC);
     int adress = LabelPosition(CMD_JBE, command, Marks, LabelsAmount);
 
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -211,7 +211,7 @@ if ( Mod_StringCompare(command, "JA ", 3) == 1 )
     PC = CommandAssign(Assembled, CMD_JA, PC);
     int adress = LabelPosition(CMD_JA, command, Marks, LabelsAmount);
 
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -221,7 +221,7 @@ if ( Mod_StringCompare(command, "JAE ", 4) == 1 )
     PC = CommandAssign(Assembled, CMD_JAE, PC);
     int adress = LabelPosition(CMD_JAE, command, Marks, LabelsAmount);
 
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -231,7 +231,7 @@ if ( Mod_StringCompare(command, "JE ", 3) == 1 )
     PC = CommandAssign(Assembled, CMD_JE, PC);
     int adress = LabelPosition(CMD_JE, command, Marks, LabelsAmount);
 
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -241,7 +241,7 @@ if ( Mod_StringCompare(command, "JNE ", 4) == 1 )
     PC = CommandAssign(Assembled, CMD_JNE, PC);
     int adress = LabelPosition(CMD_JNE, command, Marks, LabelsAmount);
 
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }
@@ -251,7 +251,7 @@ if ( Mod_StringCompare(command, "CALL :", 5) == 1 )
     PC = CommandAssign(Assembled, CMD_CALL, PC);
     int adress = LabelPosition(CMD_CALL, command, Marks, LabelsAmount);
 
-    *(Assembled+PC) = Marks[ adress ].position;
+    *(Assembled + PC) = Marks[ adress ].position;
     PC ++;
     return PC;
   }

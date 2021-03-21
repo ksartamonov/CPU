@@ -1,3 +1,6 @@
 asm
 dasm
 cpu
+test_cmds.txt
+assembled_cmds.aks
+disassembled_cmds.aks

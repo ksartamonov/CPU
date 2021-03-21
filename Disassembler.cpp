@@ -35,7 +35,6 @@ int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, i
   return DISASSEMBLED_SUCCESFULLY;
 }
 
-
 //------------------------------------------------------------------------------
 
 int main(int argc, char* argv [])
