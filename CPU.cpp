@@ -93,7 +93,7 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
   if (cmd1 == CMD_IN)
         DO_IN (prc);
 
-  if (cmd1 == CMD_MUL).
+  if (cmd1 == CMD_MUL)
         DO_MUL (prc);
 
   if (cmd1 == CMD_FSQRT)
