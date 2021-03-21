@@ -7,6 +7,7 @@
 #define ASSEMBLED_SUCCESFULLY -420
 #define NEED_MORE_ARGUMENTS -13
 
+
 typedef struct {
   int position;
   char* name;
@@ -121,6 +122,7 @@ int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Mar
 
 if ( Mod_StringCompare(command, ":", 1) == 1 )
   {
+    PC++;
     return PC;
   }
 
@@ -300,7 +302,7 @@ int CommandPush (int* Assembled, int PC, int Length, char* command)
     val[p] = command[p+5];
   }
   int a  = atoi (val);
-
+  printf("PUSHING VALUE: %d\n", a);
   *(Assembled + PC) = CMD_PUSH;
   *(Assembled + PC+1) = a;
 
@@ -357,8 +359,8 @@ void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
 
     for (int i = 0 ; i < 2*SizeOfArray; i ++)
     {
-    if ( array[i] != 0)
-    fprintf( assembled_cmds, "%d\n", array[i]);
+    if ( array[i] != 0 )
+          fprintf( assembled_cmds, "%d\n", array[i]);
     }
 }
 
@@ -398,12 +400,13 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
   {
     if ( Mod_StringCompare(Labels[pos].name, mark, sizeof(cmd) - 4) == 1)
     {
+      free(mark);
       return  pos;
     }
   }
 
   free(mark);
-  printf("ERROR: Could not find a label\n");
+  printf("ERROR: Could not find a label of a cmd %s\n", cmd);
 
   return -1;
 }
@@ -425,6 +428,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
     if ( Mod_StringCompare(P_Lines[l], ":", 1) == 1 )
       {
         Labels[Label_Num].position = cmd_idx;
+        printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[l]);
         Labels[Label_Num].name     = P_Lines[l];
         Label_Num++;
       }
