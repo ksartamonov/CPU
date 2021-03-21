@@ -28,7 +28,6 @@ int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, i
     //       printf("Wrong command %d\n",Commands[PC]);
     //       abort();
     //     }
-
   }
 
   return DISASSEMBLED_SUCCESFULLY;
@@ -100,7 +99,7 @@ int main(int argc, char* argv [])
 int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels)
 {
 
-  PrintLabel(PC, disassembled_cmds, LabelsAmount, Labels);
+  PrintLabel(PC, disassembled_cmds, LabelsAmount, Labels); //  Если на этом положении PC есть метка, то пишем ее, а потом саму команду
 
   if ( cmd1 == CMD_PUSH )
   {

@@ -13,6 +13,12 @@ typedef struct {
   char* name;
 } label;
 
+// TODO:
+// typedef struct {
+//   label* Labels;
+//   int Labels_Amount
+// } label_table;
+
 int Command_Coder     (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount);
 int CommandAssign     (int* Assembled, int CMD, int PC);
 int CommandPush       (int* Assembled, int PC, int Length, char* command);
@@ -45,12 +51,6 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
         std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mwrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i + 1<< "\x1b[1m line!\n\x1b[0m";
         Errors_amount++;
       }
-
-    // if (new_PC == WRONG_COMMAND)
-    //   {
-    //     std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mpush needs 2 arguments: \x1b[0m" <<"\x1b[1mon the \x1b[0m" << i + 1 << "\x1b[1m line!\n\x1b[0m";
-    //     Errors_amount++;
-    //   }
 
     else
           PC = new_PC;
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount) //PC -- указатель на следующий пустой элемент кодированного массива
+int Command_Coder (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount) // По строке определяет команду и записывапет в массив
 {
   assert(command != NULL);
   assert(Assembled != NULL);
@@ -267,7 +267,7 @@ return WRONG_COMMAND;
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Mod_StringCompare (const char* string1,const char* string2, int Comparing_Length)
+int Mod_StringCompare (const char* string1,const char* string2, int Comparing_Length) // Сравнивает строки до определенной длины (аналог strcnmp)
 {
   if (Comparing_Length > strlen(string1) || Comparing_Length > strlen(string2))
   {
@@ -293,7 +293,7 @@ int CommandAssign (int* Assembled, int CMD, int PC)
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int CommandPush (int* Assembled, int PC, int Length, char* command)
+int CommandPush (int* Assembled, int PC, int Length, char* command) // Для записи команды PUSH
 {
   int x = 0;
   char* val = (char*)calloc(Length - 5, sizeof(char));
@@ -302,7 +302,7 @@ int CommandPush (int* Assembled, int PC, int Length, char* command)
     val[p] = command[p+5];
   }
   int a  = atoi (val);
-  printf("PUSHING VALUE: %d\n", a);
+  //printf("PUSHING VALUE: %d\n", a);
   *(Assembled + PC) = CMD_PUSH;
   *(Assembled + PC+1) = a;
 
@@ -314,7 +314,7 @@ int CommandPush (int* Assembled, int PC, int Length, char* command)
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int RegPush (int* Assembled, int PC, char* command)
+int RegPush (int* Assembled, int PC, char* command) // Для записи PUSH регистров
 {
   assert (Assembled != NULL);
   assert (command != NULL);
@@ -334,7 +334,7 @@ int RegPush (int* Assembled, int PC, char* command)
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int RegPop (int* Assembled, int PC, char* command)
+int RegPop (int* Assembled, int PC, char* command) // Для записи POP регистров
 {
   assert(Assembled != NULL);
   assert(command != NULL);
@@ -353,7 +353,7 @@ int RegPop (int* Assembled, int PC, char* command)
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray)
+void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray) // Печать ассемблерного кода в файл
 {
   assert (array != NULL);
 
@@ -419,7 +419,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
   int NumberOfLine = 0, Label_Num = 0, cmd_idx = 0;
   while (NumberOfLine != Lines_Amount)
   {
-    if (Mod_StringCompare(P_Lines[NumberOfLine], "PUSH R", 6) == 1 )
+    if (Mod_StringCompare(P_Lines[NumberOfLine], "PUSH R", 6) == 1 ) //Если  PUSH регистра
     {
       cmd_idx++;
       NumberOfLine++;
@@ -434,7 +434,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
         Label_Num++;
       }
 
-    else
+    else //Если команды двухаргументные
       {
         if ( Mod_StringCompare(P_Lines[NumberOfLine], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[NumberOfLine], "J", 1) == 1 || Mod_StringCompare(P_Lines[NumberOfLine], "CALL", 4) == 1 )
         { cmd_idx++; }
@@ -449,7 +449,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Labels_Amount ( char** P_Lines, int Lines_Amount)
+int Labels_Amount ( char** P_Lines, int Lines_Amount) // Cчитает количество  меток
 {
   int Labels_Amount = 0;
 
