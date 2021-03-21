@@ -47,7 +47,7 @@ int main(int argc, char* argv [])
 
   if (strcmp(argv[1],"assembled_cmds.aks") != 0)
   {
-    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNeed the file \x1b[0m" << "\x1b[33;1m| assembled_cmds.aks | \x1b[0m" << "\x1b[1m to disassemble!\n\x1b[0m";
+    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNeed the file \x1b[0m" << "\x1b[33;1massembled_cmds.aks\x1b[0m" << "\x1b[1m to disassemble!\n\x1b[0m";
     abort();
   }
   FILE* f = fopen(argv[1], "r");
