@@ -6,6 +6,8 @@
 #define WRONG_COMMAND -69
 #define DISASSEMBLED_SUCCESFULLY -2002
 
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
 int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels);
 int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels);
 int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount);
@@ -96,7 +98,7 @@ int main(int argc, char* argv [])
 
 //------------------------------------------------------------------------------
 
-int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels)
+int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels) // По элементу массива int печатает дизассемблированный код
 {
 
   PrintLabel(PC, disassembled_cmds, LabelsAmount, Labels); //  Если на этом положении PC есть метка, то пишем ее, а потом саму команду

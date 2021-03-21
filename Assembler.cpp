@@ -13,11 +13,13 @@ typedef struct {
   char* name;
 } label;
 
-// TODO:
+// TODO:  структура "Таблица меток"
 // typedef struct {
 //   label* Labels;
 //   int Labels_Amount
 // } label_table;
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int Command_Coder     (char* command, int Length, int* Assembled, int PC, label* Marks, int LabelsAmount);
 int CommandAssign     (int* Assembled, int CMD, int PC);
@@ -30,8 +32,8 @@ label* PutMarks       (char* command, int* Assembled, int LabelsAmount, int Labe
 int LabelPosition     (int TypeOfJump, char* cmd, label* Labels, int LabelsAmount);
 int Mod_StringCompare (const char* string1, const char* string2, int Comparing_Length);
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount);
-int CheckPush         (char* command);
 
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, int NLabels)
 {
@@ -142,7 +144,7 @@ if ( Mod_StringCompare(command, "POP R", 5) == 1 )
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
   { //if (CheckPush(command) < 0) return NEED_MORE_ARGUMENTS;
     PC = CommandPush (Assembled, PC, Length, command);
-    if (!isdigit(command[5])) return WRONG_COMMAND;
+    if (!isdigit(command[5])) return WRONG_COMMAND; //TODO: Fix the checking of wrong argument
     return PC;
   }
 
