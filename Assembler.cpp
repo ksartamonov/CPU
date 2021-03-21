@@ -416,33 +416,33 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
 
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount)
 {
-  int i = 0, Label_Num = 0, cmd_idx = 0;
-  while (i != Lines_Amount)
+  int NumberOfLine = 0, Label_Num = 0, cmd_idx = 0;
+  while (NumberOfLine != Lines_Amount)
   {
-    if (Mod_StringCompare(P_Lines[i], "PUSH R", 6) == 1 )
+    if (Mod_StringCompare(P_Lines[NumberOfLine], "PUSH R", 6) == 1 )
     {
       cmd_idx++;
-      i++;
+      NumberOfLine++;
       continue;
     }
 
-    if ( Mod_StringCompare(P_Lines[i], ":", 1) == 1 )
+    if ( Mod_StringCompare(P_Lines[NumberOfLine], ":", 1) == 1 )
       {
         Labels[Label_Num].position = cmd_idx;
-        printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[i]);
-        Labels[Label_Num].name     = P_Lines[i];
+        printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[NumberOfLine]);
+        Labels[Label_Num].name     = P_Lines[NumberOfLine];
         Label_Num++;
       }
 
     else
       {
-        if ( Mod_StringCompare(P_Lines[i], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[i], "J", 1) == 1 || Mod_StringCompare(P_Lines[i], "CALL", 4) == 1 )
+        if ( Mod_StringCompare(P_Lines[NumberOfLine], "PUSH", 4) == 1 || Mod_StringCompare(P_Lines[NumberOfLine], "J", 1) == 1 || Mod_StringCompare(P_Lines[NumberOfLine], "CALL", 4) == 1 )
         { cmd_idx++; }
 
         cmd_idx++;
       }
 
-    i++;
+    NumberOfLine++;
   }
   return Labels;
 }
