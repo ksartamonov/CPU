@@ -10,7 +10,6 @@
 
 typedef struct CPU {
   Stack* stk;
-  char* code;
   int* RAM; //array with commands
 
   int top;
@@ -21,6 +20,7 @@ typedef struct CPU {
   int rcx;
   int rdx;
 
+  Stack* callstk;
 } CPU_t;
 
 #endif // CPU_H
