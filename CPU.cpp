@@ -36,6 +36,11 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
     cmds[idx] = atoi(P_Lines[idx]);
   }
 
+  // for (int i = 0; i < 2*Lines_Amount; i++)
+  // {
+  //   printf("CMD[%d] = %d\n", i, cmds[i]);
+  // }
+
   Walk(cmds, Lines_Amount, Processor);
 
   printf("All operations from %s are done! Processor stopped!\n", argv[1]);
@@ -56,6 +61,7 @@ void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
   while (asm_cmds[PC] != CMD_HLT)
     {
       PC = Command_Performer (asm_cmds[PC], asm_cmds[PC+1], PC, prc);
+      // printf("PC = %d ||||||||| cmd = %d\n", PC, asm_cmds[PC]);
     }
 
 }
@@ -69,7 +75,7 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
   if ( cmd1 == CMD_PUSH)
   {
     DO_PUSH(prc, cmd2);
-    pc ++ ;
+    pc ++;
   }
 
   if ( cmd1 == CMD_POP_RAX || cmd1 == CMD_POP_RBX || cmd1 == CMD_POP_RCX  || cmd1 == CMD_POP_RDX )
@@ -87,7 +93,7 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
   if (cmd1 == CMD_IN)
         DO_IN (prc);
 
-  if (cmd1 == CMD_MUL)
+  if (cmd1 == CMD_MUL).
         DO_MUL (prc);
 
   if (cmd1 == CMD_FSQRT)
@@ -101,13 +107,15 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
 
   if ( cmd1 == CMD_JMP || cmd1 == CMD_JB || cmd1 == CMD_JBE || cmd1 == CMD_JA || cmd1 == CMD_JAE || cmd1 == CMD_JE || cmd1 == CMD_JNE )
   {
-    pc = DO_JUMP(cmd1, cmd2, prc, pc) + 1;
+    pc = DO_JUMP(cmd1, cmd2, prc, pc);
+    printf("JUMP ADRESS = %d\n",pc);
     return pc;
   }
 
   if ( cmd1 == CMD_CALL)
   {
-    pc = DO_JUMP(cmd1, cmd2, prc, pc) + 1;
+    pc = DO_JUMP(cmd1, cmd2, prc, pc);
+    printf("CALL ADRESS = %d\n",pc);
     DO_CALLSTACK_PUSH(prc, pc);
     return pc;
   }
@@ -115,6 +123,7 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
   if ( cmd1 == CMD_RET)
   {
     pc = Stack_Pop(prc->callstk, &pc);
+    printf("RET ADRESS: %d\n", pc);
     return pc;
   }
 
