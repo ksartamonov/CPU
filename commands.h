@@ -16,7 +16,7 @@ enum Commands {
   CMD_MUL      = 6,  // Multiplies pre-last and the last elements
   CMD_FSQRT    = 7,  // calculates the square root of the last element
   CMD_OUT      = 8,  // prints the stack's top element
-  CMD_JMP     = 30,  // To loop the operations
+  CMD_JMP      = 30, // To loop the operations
   CMD_HLT      = 64, // stops preprocessor
   CMD_PUSH_RAX = 12, // pushes rax into stack
   CMD_PUSH_RBX = 13, // pushes rbx into stack
@@ -52,7 +52,7 @@ int DO_ADD (CPU_t* proc)
 
   if ((proc->stk->stack_size) < 2 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to ADD\n");
   return -1;
   }
 
@@ -76,7 +76,7 @@ int DO_SUB (CPU_t* proc)
 
   if ((proc->stk->stack_size) < 2 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to SUB\n");
   return -1;
   }
 
@@ -100,7 +100,7 @@ int DO_DIV (CPU_t* proc)
 
   if ((proc->stk->stack_size) < 2 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to DIV\n");
   return -1;
   }
 
@@ -127,7 +127,7 @@ int DO_MUL (CPU_t* proc)
 
   if ((proc->stk->stack_size) < 2 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to MUL\n");
   return -1;
   }
 
@@ -137,7 +137,7 @@ int DO_MUL (CPU_t* proc)
   Last    = Stack_Pop((proc->stk), &Last);
   PreLast = Stack_Pop((proc->stk), &PreLast);
 
-  int mul = PreLast / Last;
+  int mul = PreLast * Last;
 
   Stack_Push((proc->stk), mul);
   return 1;
@@ -169,7 +169,7 @@ int DO_FSQRT(CPU_t* proc)
 
   if ((proc->stk->stack_size) < 1 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to FSQRT\n");
   return -1;
   }
 
@@ -191,16 +191,16 @@ int DO_OUT (CPU_t* proc)
 
   if ((proc->stk->stack_size) < 1 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to OUT\n");
   return -1;
   }
 
-  int Last = 666;
+  int Last = 0;
 
   Last = Stack_Pop((proc->stk), &Last);
   printf("Top element: %d\n", Last);
 
-  Stack_Push((proc->stk), Last);
+  //Stack_Push((proc->stk), Last);
 
   return 1;
 }
@@ -217,24 +217,28 @@ int DO_REG_PUSH (CPU_t* proc, int rx)
   case CMD_PUSH_RAX:
         {
           Stack_Push((proc->stk), (proc->rax));
+          printf("PUSHING RAX = %d\n", proc->rax);
           return 1;
         }
 
   case CMD_PUSH_RBX:
         {
           Stack_Push((proc->stk), (proc->rbx));
+          printf("PUSHING RBX = %d\n", proc->rbx);
           return 1;
         }
 
   case CMD_PUSH_RCX:
         {
           Stack_Push((proc->stk), (proc->rcx));
+          printf("PUSHING RCX = %d\n", proc->rcx);
           return 1;
         }
 
   case CMD_PUSH_RDX:
         {
           Stack_Push((proc->stk), (proc->rdx));
+          printf("PUSHING RDX = %d\n", proc->rdx);
           return 1;
         }
   default:
@@ -250,7 +254,7 @@ int DO_REG_POP (CPU_t* proc, int rx)
 
   if ((proc->stk->stack_size) < 1 )
   {
-  printf("ERROR: Not enough elements in stack\n");
+  printf("ERROR: Not enough elements in stack to POP\n");
   return -1;
   }
 
@@ -259,24 +263,28 @@ int DO_REG_POP (CPU_t* proc, int rx)
   case CMD_POP_RAX:
         {
           proc->rax = Stack_Pop (proc->stk, &(proc->rax) );
+          printf("POPING RAX = %d\n", proc->rax);
           return 1;
         }
 
   case CMD_POP_RBX:
         {
           proc->rbx = Stack_Pop((proc->stk), (&(proc->rbx)));
+          printf("POPING RBX = %d\n", proc->rbx);
           return 1;
         }
 
   case CMD_POP_RCX:
         {
           proc->rcx = Stack_Pop((proc->stk), (&(proc->rbx)));
+          printf("POPING RCX = %d\n", proc->rcx);
           return 1;
         }
 
   case CMD_POP_RDX:
         {
           proc->rdx = Stack_Pop((proc->stk), (&(proc->rdx)));
+          printf("POPING RDX = %d\n", proc->rdx);
           return 1;
         }
   default:
@@ -369,6 +377,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_CALL:
           {
             IP = JumpAdress;
+            printf("JUMP ADRESS: %d\n", IP);
             return IP;
           }
   }
@@ -381,7 +390,6 @@ int DO_CALLSTACK_PUSH (CPU_t* proc, int IP)
 {
   assert(proc != NULL);
   assert(proc->callstk != NULL);
-
   Stack_Push(proc->callstk, IP);
   return 1;
 }
