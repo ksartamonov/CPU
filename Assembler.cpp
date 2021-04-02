@@ -7,21 +7,16 @@ const int COULD_NOT_DISASSEMBLE = -777;
 const int ASSEMBLED_SUCCESFULLY = -420;
 const int NEED_MORE_ARGUMENTS   = -13;
 const int NEED_NAME_OF_FILE     = -1;
+const int CANT_FIND_LABEL       = -228;
+// const char* _RED_               = "\x1b[31;1m";
+// const char* _BOLD_              = "\x1b[1m";
+// const char* _GREEN_            = "\x1b[32;1m";
+// const char* _LIGHT_BLUE_         = "\x1b[36;1m";
 
-const char* _RED_               = "\x1b[31;1m";
-const char* _BOLD_              = "\x1b[1m";
-const char* _GREEN_            = "\x1b[32;1m";
-const char* _LIGHT_BLUE_         = "\x1b[36;1m";
 struct label{
   int position;
   char* name;
 };
-
-// TODO:  структура "Таблица меток"
-// struct {
-//   label* Labels;
-//   int Labels_Amount
-// } label_table;
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
@@ -54,7 +49,7 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
     if (new_PC == WRONG_COMMAND)
       {
-        std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mwrong command | \x1b[0m" << P_Lines[i] << "\x1b[1m | on the \x1b[0m" << i + 1<< "\x1b[1m line!\n\x1b[0m";
+        std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "wrong command \x1b[0m" << _RED_ << P_Lines[i] << "\x1b[0m" << _BOLD_ << " on the \x1b[0m" << i + 1<< _BOLD_ << " line!\n\x1b[0m";
         Errors_amount++;
       }
 
@@ -85,7 +80,11 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 //TODO: струткура, отвечающая за данные файла
 
   FILE* f = fopen(argv[1], "r");
-
+  if (f == NULL)
+    {
+      std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Could not find the file \x1b[0m" << _RED_ << argv[1] << "\n\x1b[0m"; //TODO: CORRECT COLOURS
+      return NEED_NAME_OF_FILE;
+    }
   long int SizeOfFile = GetSize(f);
 
   char* buf = ReadFile(argv[1]);
@@ -153,7 +152,17 @@ if ( Mod_StringCompare(command, "POP R", 5) == 1 )
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
   { //if (CheckPush(command) < 0) return NEED_MORE_ARGUMENTS;
     PC = CommandPush (Assembled, PC, Length, command);
-    if (!isdigit(command[5])) return WRONG_COMMAND; //TODO: Add the checking of wrong argument
+    // printf("LENGTH = %d\n", Length);
+    int symb = 5;
+    while ( isalpha(command[symb]) || isdigit(command[symb]) )
+    {
+      if (!isdigit(command[symb]))
+        return WRONG_COMMAND;
+
+      symb++;
+    }
+
+
     return PC;
   }
 
@@ -421,9 +430,11 @@ int LabelPosition(int TypeOfJump, char* cmd, label* Labels, int LabelsAmount)
   }
 
   free(mark);
-  printf("ERROR: Could not find a label of a cmd %s\n", cmd);
 
-  return -1;
+  std::cout << _RED_ << "error: " << "\x1b[0m" << _BOLD_ << "could not find the label of a command " << "\x1b[0m" << _RED_ << cmd << "\n\x1b[0m";
+  abort();
+
+  //return CANT_FIND_LABEL;
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -443,7 +454,7 @@ label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labe
     if ( Mod_StringCompare(P_Lines[NumberOfLine], ":", 1) == 1 )
       {
         Labels[Label_Num].position = cmd_idx;
-        printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[NumberOfLine]);
+        //printf("label[%d] = %d NAME: %s\n", Label_Num, cmd_idx, P_Lines[NumberOfLine]);
         Labels[Label_Num].name     = P_Lines[NumberOfLine];
         Label_Num++;
       }

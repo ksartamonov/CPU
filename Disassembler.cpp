@@ -12,7 +12,7 @@ int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int Lab
 int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels);
 int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount);
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount)
 {
@@ -35,7 +35,7 @@ int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, i
   return DISASSEMBLED_SUCCESFULLY;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int main(int argc, char* argv [])
 {
@@ -95,7 +95,7 @@ int main(int argc, char* argv [])
   return 0;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels) // По элементу массива int печатает дизассемблированный код
 {
@@ -235,7 +235,7 @@ int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int Lab
   return WRONG_COMMAND;
 }
 
-//------------------------------------------------------------------------------
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels)
 {
