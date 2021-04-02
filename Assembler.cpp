@@ -2,19 +2,23 @@
 #include <iostream>
 #include "File_Operations.h"
 
-#define WRONG_COMMAND -69
-#define COULD_NOT_DISASSEMBLE -777
-#define ASSEMBLED_SUCCESFULLY -420
-#define NEED_MORE_ARGUMENTS -13
+const int WRONG_COMMAND         = -69;
+const int COULD_NOT_DISASSEMBLE = -777;
+const int ASSEMBLED_SUCCESFULLY = -420;
+const int NEED_MORE_ARGUMENTS   = -13;
+const int NEED_NAME_OF_FILE     = -1;
 
-
-typedef struct {
+const char* _RED_               = "\x1b[31;1m";
+const char* _BOLD_              = "\x1b[1m";
+const char* _GREEN_            = "\x1b[32;1m";
+const char* _LIGHT_BLUE_         = "\x1b[36;1m";
+struct label{
   int position;
   char* name;
-} label;
+};
 
 // TODO:  структура "Таблица меток"
-// typedef struct {
+// struct {
 //   label* Labels;
 //   int Labels_Amount
 // } label_table;
@@ -74,9 +78,11 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 {
   if ( argc < 2 )
   {
-    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNot enough arguments!\n\x1b[0m";
-    abort();
+    std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Not enough arguments! \n\x1b[0m"; //TODO: CORRECT COLOURS
+    return NEED_NAME_OF_FILE;
   }
+
+//TODO: струткура, отвечающая за данные файла
 
   FILE* f = fopen(argv[1], "r");
 
@@ -107,10 +113,13 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.aks", "w");
 
   AssembledDump (Assembled, ASSEMBLED_CMDS, Lines_Amount);
-
+  //TODO: свой calloc и free
   free(P_Lines);
   free(Assembled);
-  std::cout << "\x1b[32;1mAssembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " assembled_cmds.aks\n";
+  free(Labels);
+  fclose(ASSEMBLED_CMDS);
+
+  std::cout << _GREEN_ << "Assembled successfully!\n\x1b[0m" << _LIGHT_BLUE_ << "FROM: \x1b[0m"<< argv[1] << _LIGHT_BLUE_ << "\nINTO:\x1b[0m" << " assembled_cmds.aks\n";
   return 0;
 }
 
@@ -144,7 +153,7 @@ if ( Mod_StringCompare(command, "POP R", 5) == 1 )
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
   { //if (CheckPush(command) < 0) return NEED_MORE_ARGUMENTS;
     PC = CommandPush (Assembled, PC, Length, command);
-    if (!isdigit(command[5])) return WRONG_COMMAND; //TODO: Fix the checking of wrong argument
+    if (!isdigit(command[5])) return WRONG_COMMAND; //TODO: Add the checking of wrong argument
     return PC;
   }
 
@@ -269,8 +278,11 @@ return WRONG_COMMAND;
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Mod_StringCompare (const char* string1,const char* string2, int Comparing_Length) // Сравнивает строки до определенной длины (аналог strcnmp)
+int Mod_StringCompare (const char* string1, const char* string2, int Comparing_Length) // Сравнивает строки до определенной длины (аналог strcnmp)
 {
+  assert(string1);
+  assert(string2);
+
   if (Comparing_Length > strlen(string1) || Comparing_Length > strlen(string2))
   {
     return -1;
@@ -278,7 +290,7 @@ int Mod_StringCompare (const char* string1,const char* string2, int Comparing_Le
 
   for ( int i = 0; i < Comparing_Length ; i ++)
   {
-    if ( (string1[i]) != (string2[i]) )
+    if  ( tolower(string1[i]) != tolower(string2[i]) )
         return  0;
   }
   return 1;
