@@ -3,8 +3,8 @@
 #include "commands.h"
 #include "File_Operations.h"
 
-#define WRONG_COMMAND -69
-#define DISASSEMBLED_SUCCESFULLY -2002
+
+
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
@@ -22,14 +22,9 @@ int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, i
   assert(disassembled_cmds != NULL);
 
 
-  while (PC !=  NumberOfcommands && Commands[PC] != 0)
+  while ( PC+1 != NumberOfcommands )
   {
     PC = Command_Decoder(Commands[PC], Commands[PC+1], disassembled_cmds, PC, Labels_Amount, Labels);
-    // if (PC == WRONG_COMMAND)
-    //       {
-    //       printf("Wrong command %d\n",Commands[PC]);
-    //       abort();
-    //     }
   }
 
   return DISASSEMBLED_SUCCESFULLY;
@@ -41,14 +36,14 @@ int main(int argc, char* argv [])
 {
   if ( argc < 2 )
   {
-    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNot enough arguments!\n\x1b[0m";
+    std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Not enough arguments!\n\x1b[0m";
     abort();
   }
 
   if (strcmp(argv[1],"assembled_cmds.aks") != 0)
   {
-    std::cout << "\x1b[31;1merror: \x1b[0m" << "\x1b[1mNeed the file \x1b[0m" << "\x1b[33;1massembled_cmds.aks\x1b[0m" << "\x1b[1m to disassemble!\n\x1b[0m";
-    abort();
+    std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Need the file \x1b[0m" << _YELLOW_ << "assembled_cmds.aks\x1b[0m" << _BOLD_ << " to disassemble!\n\x1b[0m";
+    return WRONG_FILE;
   }
   FILE* f = fopen(argv[1], "r");
 
@@ -90,8 +85,9 @@ int main(int argc, char* argv [])
   FILE* DISASSEMBLED_CMDS = fopen("disassembled_cmds.aks", "w");
 
   if ( DisAssemble(cmds, DISASSEMBLED_CMDS, Lines_Amount + labels_amount, Labels, labels_amount) == DISASSEMBLED_SUCCESFULLY)
-        std::cout << "\x1b[32;1mDisassembled successfully!\n\x1b[0m" << "\x1b[36;1mFROM: \x1b[0m"<< argv[1] << "\x1b[36;1m\nINTO:\x1b[0m" << " disassembled_cmds.aks\n";
+        std::cout << _GREEN_ <<"Disassembled successfully!\n\x1b[0m" << _LIGHT_BLUE_ << "FROM: \x1b[0m"<< argv[1] << _LIGHT_BLUE_ << "\nINTO:\x1b[0m" << " disassembled_cmds.aks\n";
 
+  fclose(DISASSEMBLED_CMDS);
   return 0;
 }
 
@@ -149,6 +145,10 @@ int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int Lab
 
   if ( cmd1 == CMD_PUSH_RAX )
   {
+    // printf("PC = %d\n", PC);
+    // printf("cmd1 = %d\n", cmd1);
+    // printf("cmd2 = %d\n", cmd2);
+
     fprintf(disassembled_cmds, "PUSH RAX\n"); PC++; return PC;
   }
 
@@ -229,7 +229,7 @@ int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int Lab
 
   if ( cmd1 == CMD_RET)
   {
-    fprintf(disassembled_cmds, "RET\n", cmd2); PC ++; return PC;
+    fprintf(disassembled_cmds, "RET\n"); PC ++; return PC;
   }
 
   return WRONG_COMMAND;

@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "commands.h"
 #include "CPU.h"
 
@@ -16,6 +16,14 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 
 
   FILE* f = fopen(argv[1], "r");
+
+  if (f == NULL)
+  {
+    {
+      std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Could not find the file \x1b[0m" << _RED_ << argv[1] << "\n\x1b[0m"; //TODO: CORRECT COLOURS
+      return NEED_NAME_OF_FILE;
+    }
+  }
 
   long int SizeOfFile = GetSize(f);
 
@@ -36,14 +44,9 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
     cmds[idx] = atoi(P_Lines[idx]);
   }
 
-  // for (int i = 0; i < 2*Lines_Amount; i++)
-  // {
-  //   printf("CMD[%d] = %d\n", i, cmds[i]);
-  // }
-
   Walk(cmds, Lines_Amount, Processor);
 
-  printf("All operations from %s are done! Processor stopped!\n", argv[1]);
+  std::cout << _BOLD_ << "All operations from \x1b[0m" << _LIGHT_BLUE_ << argv[1] << " \x1b[0m" << _BOLD_ << "are done!" << "\n\x1b[0m";
   return 0;
 }
 
@@ -61,7 +64,6 @@ void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
   while (asm_cmds[PC] != CMD_HLT)
     {
       PC = Command_Performer (asm_cmds[PC], asm_cmds[PC+1], PC, prc);
-      // printf("PC = %d ||||||||| cmd = %d\n", PC, asm_cmds[PC]);
     }
 
 }
@@ -108,22 +110,22 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
   if ( cmd1 == CMD_JMP || cmd1 == CMD_JB || cmd1 == CMD_JBE || cmd1 == CMD_JA || cmd1 == CMD_JAE || cmd1 == CMD_JE || cmd1 == CMD_JNE )
   {
     pc = DO_JUMP(cmd1, cmd2, prc, pc);
-    printf("JUMP ADRESS = %d\n",pc);
+    //printf("JUMP ADRESS = %d\n",pc);
     return pc;
   }
 
   if ( cmd1 == CMD_CALL)
   {
+    DO_CALLSTACK_PUSH(prc, pc+2);
     pc = DO_JUMP(cmd1, cmd2, prc, pc);
-    printf("CALL ADRESS = %d\n",pc);
-    DO_CALLSTACK_PUSH(prc, pc);
+    //printf("CALL ADRESS = %d\n",pc);
     return pc;
   }
 
   if ( cmd1 == CMD_RET)
   {
     pc = Stack_Pop(prc->callstk, &pc);
-    printf("RET ADRESS: %d\n", pc);
+    //printf("RET ADRESS: %d\n", pc);
     return pc;
   }
 

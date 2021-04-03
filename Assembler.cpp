@@ -2,12 +2,7 @@
 #include <iostream>
 #include "File_Operations.h"
 
-const int WRONG_COMMAND         = -69;
-const int COULD_NOT_DISASSEMBLE = -777;
-const int ASSEMBLED_SUCCESFULLY = -420;
-const int NEED_MORE_ARGUMENTS   = -13;
-const int NEED_NAME_OF_FILE     = -1;
-const int CANT_FIND_LABEL       = -228;
+
 // const char* _RED_               = "\x1b[31;1m";
 // const char* _BOLD_              = "\x1b[1m";
 // const char* _GREEN_            = "\x1b[32;1m";
@@ -73,7 +68,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 {
   if ( argc < 2 )
   {
-    std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Not enough arguments! \n\x1b[0m"; //TODO: CORRECT COLOURS
+    std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Not enough arguments! \n\x1b[0m";
     return NEED_NAME_OF_FILE;
   }
 
@@ -83,7 +78,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   if (f == NULL)
     {
       std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Could not find the file \x1b[0m" << _RED_ << argv[1] << "\n\x1b[0m"; //TODO: CORRECT COLOURS
-      return NEED_NAME_OF_FILE;
+      return WRONG_FILE;
     }
   long int SizeOfFile = GetSize(f);
 
