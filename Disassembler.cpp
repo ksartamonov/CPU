@@ -11,20 +11,20 @@
 int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels);
 int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels);
 int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount);
+int ThisLabelExists(int* marks, int size, int pos);
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount)
+int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfCommands, int* Labels, int Labels_Amount)
 {
   int PC = 0;
 
   assert(Labels != NULL);
   assert(disassembled_cmds != NULL);
 
-
-  while ( PC != NumberOfcommands )
+  while ( PC != NumberOfCommands)
   {
-    PC = Command_Decoder(Commands[PC], Commands[PC+1], Commands[PC+2],disassembled_cmds, PC, Labels_Amount, Labels);
+    PC = Command_Decoder(Commands[PC], Commands[PC+1], Commands[PC+2], disassembled_cmds, PC, Labels_Amount, Labels);
   }
 
   return DISASSEMBLED_SUCCESFULLY;
@@ -52,6 +52,7 @@ int main(int argc, char* argv [])
   char* buf = ReadFile(argv[1]);
 
   int Lines_Amount = CounterOfLines(buf, SizeOfFile);
+  //printf("Lines amount= %d\n", Lines_Amount);
 
   char** P_Lines = (char**) calloc (Lines_Amount, sizeof (char*));
 
@@ -73,7 +74,7 @@ int main(int argc, char* argv [])
 
   for (int l = 0; l < Lines_Amount; l++)
   {
-    if ( cmds[l] == CMD_JMP || cmds[l] == CMD_JB || cmds[l] == CMD_JBE || cmds[l] == CMD_JA || cmds[l] == CMD_JAE || cmds[l] == CMD_JE || cmds[l] == CMD_JNE || cmds[l] == CMD_CALL)
+    if ( (cmds[l] == CMD_JMP || cmds[l] == CMD_JB || cmds[l] == CMD_JBE || cmds[l] == CMD_JA || cmds[l] == CMD_JAE || cmds[l] == CMD_JE || cmds[l] == CMD_JNE || cmds[l] == CMD_CALL ) && ( !ThisLabelExists(Labels, Lines_Amount, cmds[l+1])) )
     {
       Labels[label_idx] = cmds[l + 1];
       label_idx++;
@@ -81,11 +82,11 @@ int main(int argc, char* argv [])
   }
 
   int labels_amount = label_idx;
-
+  //printf("LABELS amount = %d\n", labels_amount);
   FILE* DISASSEMBLED_CMDS = fopen("disassembled_cmds.aks", "w");
 
-  if ( DisAssemble(cmds, DISASSEMBLED_CMDS, Lines_Amount + labels_amount, Labels, labels_amount) == DISASSEMBLED_SUCCESFULLY)
-        std::cout << _GREEN_ <<"Disassembled successfully!\n\x1b[0m" << _LIGHT_BLUE_ << "FROM: \x1b[0m"<< argv[1] << _LIGHT_BLUE_ << "\nINTO:\x1b[0m" << " disassembled_cmds.aks\n";
+  if ( DisAssemble(cmds, DISASSEMBLED_CMDS, Lines_Amount , Labels, labels_amount) == DISASSEMBLED_SUCCESFULLY)
+        std::cout << _GREEN_ <<"Disassembled successfully!\n" << _RESET_COLOUR << _LIGHT_BLUE_ << "FROM: "<< _RESET_COLOUR << argv[1] << _LIGHT_BLUE_ << "\nINTO:" << _RESET_COLOUR <<" disassembled_cmds.aks\n";
 
   fclose(DISASSEMBLED_CMDS);
   return 0;
@@ -145,10 +146,6 @@ int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int P
 
   if ( cmd1 == CMD_PUSH_RAX )
   {
-    // printf("PC = %d\n", PC);
-    // printf("cmd1 = %d\n", cmd1);
-    // printf("cmd2 = %d\n", cmd2);
-
     fprintf(disassembled_cmds, "PUSH RAX\n"); PC++; return PC;
   }
 
@@ -236,7 +233,7 @@ int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int P
   {
     fprintf(disassembled_cmds, "MOV %d, [%d]\n", cmd2, cmd3); PC += 3; return PC;
   }
-  
+
   return WRONG_COMMAND;
 }
 
@@ -253,4 +250,16 @@ int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels)
     }
   }
   return -1;
+}
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+int ThisLabelExists(int* marks, int size, int pos)
+{
+  for (int i = 0 ; i < size; i ++)
+  {
+    if ( marks[i] == pos)
+    return 1;
+  }
+  return 0;
 }

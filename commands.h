@@ -36,7 +36,7 @@ enum Commands {
   CMD_JNE      = 36, //
   CMD_CALL     = 40, // Jumps to fuction and uses callstack
   CMD_RET      = 50,  // returns to position from callstack
-  CMD_MOV      = 70
+  CMD_MOV      = 70 // uses RAM 
 };
 
 

@@ -525,7 +525,6 @@ int CommandMov(int* Assembled, int PC, char* command) // Для считыава
     return WRONG_COMMAND;
 
 
-
   if ( adr < sizeof(Assembled) )
     std::cout << _PINK_ << "warning: " << _RESET_COLOUR << _BOLD_ << " command " << _RESET_COLOUR <<_PINK_ << command << _RESET_COLOUR  << _BOLD_ << " may change the program working.\n" << _RESET_COLOUR;
 
