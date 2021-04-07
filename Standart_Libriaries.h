@@ -6,6 +6,8 @@ const char* _BOLD_               = "\x1b[1m";
 const char* _GREEN_              = "\x1b[32;1m";
 const char* _LIGHT_BLUE_         = "\x1b[36;1m";
 const char* _YELLOW_             = "\x1b[36;1m";
+const char* _PINK_               = "\x1b[35;1m";
+const char* _RESET_COLOUR        = "\x1b[0m";
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 

@@ -3,7 +3,11 @@
 #include "CPU.h"
 
 void Walk (int* asm_cmds, int ArraySize, CPU_t* prc);
-int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc);
+int Command_Performer (int* asm_cmds, int pc, CPU_t* prc);
+
+int RAM[1024] = {};
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int main (int argc, char* argv[])  // ./CPU #FileName#
 {
@@ -35,18 +39,21 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 
   assert(P_Lines != NULL);
 
-  int* cmds = (int*)calloc(Lines_Amount, sizeof(int));
+  //int* RAM = (int*)calloc(Lines_Amount, sizeof(int));
 
   PutPointers (buf, SizeOfFile, P_Lines, Lines_Amount);
 
   for (int idx = 0; idx < Lines_Amount; idx++)
   {
-    cmds[idx] = atoi(P_Lines[idx]);
+    RAM[idx] = atoi(P_Lines[idx]);
   }
 
-  Walk(cmds, Lines_Amount, Processor);
+  Walk(RAM, Lines_Amount, Processor);
+
 
   std::cout << _BOLD_ << "All operations from \x1b[0m" << _LIGHT_BLUE_ << argv[1] << " \x1b[0m" << _BOLD_ << "are done!" << "\n\x1b[0m";
+
+  free(RAM);
   return 0;
 }
 
@@ -54,24 +61,32 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 //------------------------------------------------------------------------------
 
 
-void Walk (int* asm_cmds, int ArraySize, CPU_t* prc)
+void Walk (int* RAM, int ArraySize, CPU_t* prc)
 {
-  assert (asm_cmds != NULL);
+  assert (RAM != NULL);
   assert (prc != NULL);
 
   int PC = 0, new_PC = 0;
 
-  while (asm_cmds[PC] != CMD_HLT)
+  while (RAM[PC] != CMD_HLT)
     {
-      PC = Command_Performer (asm_cmds[PC], asm_cmds[PC+1], PC, prc);
+      PC = Command_Performer (RAM, PC, prc);
     }
 
+  for (int i = 0 ; i < ArraySize ; i ++)
+  {
+    printf("ARR[%d] = %d\n", i, RAM[i]);
+  }
 }
 
 //------------------------------------------------------------------------------
 
-int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
+int Command_Performer (int* asm_cmds, int pc, CPU_t* prc)
 {
+  int cmd1 = asm_cmds[pc];
+  int cmd2 = asm_cmds[pc+1];
+  int cmd3 = asm_cmds[pc+2];
+
   assert (prc != NULL);
 
   if ( cmd1 == CMD_PUSH)
@@ -127,6 +142,13 @@ int Command_Performer (int cmd1, int cmd2, int pc, CPU_t* prc)
     pc = Stack_Pop(prc->callstk, &pc);
     //printf("RET ADRESS: %d\n", pc);
     return pc;
+  }
+
+  if ( cmd1 == CMD_MOV)
+  {
+    // cmd2 = value, cmd3 = adress
+    DO_MOV(asm_cmds, cmd2, cmd3);
+    pc += 2;
   }
 
   pc++;

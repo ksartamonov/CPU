@@ -2,12 +2,6 @@
 #include <iostream>
 #include "File_Operations.h"
 
-
-// const char* _RED_               = "\x1b[31;1m";
-// const char* _BOLD_              = "\x1b[1m";
-// const char* _GREEN_            = "\x1b[32;1m";
-// const char* _LIGHT_BLUE_         = "\x1b[36;1m";
-
 struct label{
   int position;
   char* name;
@@ -26,6 +20,7 @@ label* PutMarks       (char* command, int* Assembled, int LabelsAmount, int Labe
 int LabelPosition     (int TypeOfJump, char* cmd, label* Labels, int LabelsAmount);
 int Mod_StringCompare (const char* string1, const char* string2, int Comparing_Length);
 label* Finding_Labels (char** P_Lines, int Lines_Amount, label* Labels, int Labels_Amount);
+int CommandMov(int* Assembled, int PC, char* command); // Для считыавания  команды mov
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
@@ -44,7 +39,7 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
     if (new_PC == WRONG_COMMAND)
       {
-        std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "wrong command \x1b[0m" << _RED_ << P_Lines[i] << "\x1b[0m" << _BOLD_ << " on the \x1b[0m" << i + 1<< _BOLD_ << " line!\n\x1b[0m";
+        std::cout << _RED_ << "error: " << _RESET_COLOUR << _BOLD_ << "wrong command " << _RESET_COLOUR << _RED_ << P_Lines[i] << _RESET_COLOUR << _BOLD_ << " on the " << _RESET_COLOUR << i + 1 << _BOLD_ << " line!\n" << _RESET_COLOUR;
         Errors_amount++;
       }
 
@@ -68,7 +63,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 {
   if ( argc < 2 )
   {
-    std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Not enough arguments! \n\x1b[0m";
+    std::cout << _RED_ << "error: " << _RESET_COLOUR << _BOLD_ << "Not enough arguments! \n" << _RESET_COLOUR;
     return NEED_NAME_OF_FILE;
   }
 
@@ -77,7 +72,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   FILE* f = fopen(argv[1], "r");
   if (f == NULL)
     {
-      std::cout << _RED_ << "error: \x1b[0m" << _BOLD_ << "Could not find the file \x1b[0m" << _RED_ << argv[1] << "\n\x1b[0m"; //TODO: CORRECT COLOURS
+      std::cout << _RED_ << "error: " << _RESET_COLOUR << _BOLD_ << "Could not find the file " << _RESET_COLOUR << _RED_ << argv[1] << "\n" << _RESET_COLOUR; //TODO: CORRECT COLOURS
       return WRONG_FILE;
     }
   long int SizeOfFile = GetSize(f);
@@ -107,13 +102,13 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.aks", "w");
 
   AssembledDump (Assembled, ASSEMBLED_CMDS, Lines_Amount);
-  //TODO: свой calloc и free
+
   free(P_Lines);
   free(Assembled);
   free(Labels);
   fclose(ASSEMBLED_CMDS);
 
-  std::cout << _GREEN_ << "Assembled successfully!\n\x1b[0m" << _LIGHT_BLUE_ << "FROM: \x1b[0m"<< argv[1] << _LIGHT_BLUE_ << "\nINTO:\x1b[0m" << " assembled_cmds.aks\n";
+  std::cout << _GREEN_ << "Assembled successfully!\n" << _RESET_COLOUR << _LIGHT_BLUE_ << "FROM: " << _RESET_COLOUR << argv[1] << _LIGHT_BLUE_ << "\nINTO:" << _RESET_COLOUR << " assembled_cmds.aks\n";
   return 0;
 }
 
@@ -145,9 +140,8 @@ if ( Mod_StringCompare(command, "POP R", 5) == 1 )
 
 
 if ( Mod_StringCompare(command, "PUSH ", 5) == 1 )
-  { //if (CheckPush(command) < 0) return NEED_MORE_ARGUMENTS;
+  {
     PC = CommandPush (Assembled, PC, Length, command);
-    // printf("LENGTH = %d\n", Length);
     int symb = 5;
     while ( isalpha(command[symb]) || isdigit(command[symb]) )
     {
@@ -275,7 +269,11 @@ if ( Mod_StringCompare(command, "RET", 3) == 1 )
     return PC;
   }
 
-
+if ( Mod_StringCompare(command, "MOV ", 4) == 1)
+  {
+    PC = CommandMov(Assembled, PC, command);
+    return PC;
+  }
 return WRONG_COMMAND;
 
 }
@@ -480,6 +478,60 @@ int Labels_Amount ( char** P_Lines, int Lines_Amount) // Cчитает коли�
   }
 
   return Labels_Amount;
+}
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+int CommandMov(int* Assembled, int PC, char* command) // Для считыавания команды mov
+{
+  *(Assembled + PC) = CMD_MOV;
+  PC++;
+
+  int coma_position = 0;
+
+  for ( int i = 0; i < strlen(command); i++ )
+  {
+    if (command[i] == ',')
+      coma_position = i;
+  }
+
+  if ( coma_position == 0 )
+    return WRONG_COMMAND;
+
+  char* val = (char*)calloc ( coma_position - 4, sizeof(char) );
+  for (int idx = 0; idx < sizeof(val); idx ++)
+  {
+    val[idx] = command[idx+4];
+  }
+
+  int value = atoi(val);
+
+  *(Assembled + PC) = value;
+  PC++;
+
+  char* adress = (char*)calloc(strlen(command) - coma_position, sizeof(char));
+
+  for (int idx = 0 ; idx < strlen(command) - coma_position - 1; idx ++)
+  {
+    adress[idx] = command[coma_position + 3 + idx];
+  }
+
+  int adr = atoi(adress);
+  *(Assembled + PC) = adr;
+  PC++;
+
+
+  if ( value == 0 || adr <= 0 )
+    return WRONG_COMMAND;
+
+
+
+  if ( adr < sizeof(Assembled) )
+    std::cout << _PINK_ << "warning: \x1b[0m" << _BOLD_ << " command \x1b[0m" << _PINK_ << command << "\x1b[0m"  << _BOLD_ << " may change the program working.\n\x1b[0m";
+
+  free(val);
+  free(adress);
+  return PC;
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

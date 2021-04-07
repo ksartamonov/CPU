@@ -7,6 +7,8 @@
 #include "CPU.h"
 #include "Stack.h"
 
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
 enum Commands {
   CMD_PUSH     = 10,  // Pushes into a stack                                        (needs 2 arguments)
   CMD_ADD      = 2,  // Summs pre-last and last element of stack
@@ -33,7 +35,8 @@ enum Commands {
   CMD_JE       = 35, //
   CMD_JNE      = 36, //
   CMD_CALL     = 40, // Jumps to fuction and uses callstack
-  CMD_RET      = 50  // returns to position from callstack
+  CMD_RET      = 50,  // returns to position from callstack
+  CMD_MOV      = 70
 };
 
 
@@ -377,7 +380,7 @@ int DO_JUMP (int JUMP_type, int JumpAdress, CPU_t* proc, int IP)
     case CMD_CALL:
           {
             IP = JumpAdress;
-            printf("JUMP ADRESS: %d\n", IP);
+            //printf("JUMP ADRESS: %d\n", IP);
             return IP;
           }
   }
@@ -390,11 +393,20 @@ int DO_CALLSTACK_PUSH (CPU_t* proc, int IP)
 {
   assert(proc != NULL);
   assert(proc->callstk != NULL);
+
   Stack_Push(proc->callstk, IP);
   return 1;
 }
 
 //------------------------------------------------------------------------------
 
+int DO_MOV(int* RAM, int value, int adress)
+{
 
+  assert(RAM);
+
+  RAM[adress] = value;
+
+  return 1;
+}
 #endif  // COMMANDS_H

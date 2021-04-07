@@ -10,7 +10,7 @@
 
 typedef struct CPU {
   Stack* stk;
-  int* RAM; //array with commands
+
 
   int top;
   long int FileSize;

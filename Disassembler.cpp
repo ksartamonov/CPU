@@ -8,7 +8,7 @@
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels);
+int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels);
 int PrintLabel (int PC, FILE* disassembled_cmds, int LabelsAmount, int* Labels);
 int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, int* Labels, int Labels_Amount);
 
@@ -22,9 +22,9 @@ int  DisAssemble(int* Commands, FILE* disassembled_cmds, int NumberOfcommands, i
   assert(disassembled_cmds != NULL);
 
 
-  while ( PC+1 != NumberOfcommands )
+  while ( PC != NumberOfcommands )
   {
-    PC = Command_Decoder(Commands[PC], Commands[PC+1], disassembled_cmds, PC, Labels_Amount, Labels);
+    PC = Command_Decoder(Commands[PC], Commands[PC+1], Commands[PC+2],disassembled_cmds, PC, Labels_Amount, Labels);
   }
 
   return DISASSEMBLED_SUCCESFULLY;
@@ -93,7 +93,7 @@ int main(int argc, char* argv [])
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels) // По элементу массива int печатает дизассемблированный код
+int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int PC, int LabelsAmount, int* Labels) // По элементу массива int печатает дизассемблированный код
 {
 
   PrintLabel(PC, disassembled_cmds, LabelsAmount, Labels); //  Если на этом положении PC есть метка, то пишем ее, а потом саму команду
@@ -232,6 +232,10 @@ int Command_Decoder(int cmd1, int cmd2, FILE* disassembled_cmds, int PC, int Lab
     fprintf(disassembled_cmds, "RET\n"); PC ++; return PC;
   }
 
+  if ( cmd1 == CMD_MOV)
+  {
+    fprintf(disassembled_cmds, "MOV %d, [%d]\n", cmd2, cmd3); PC += 3; return PC;
+  }
   return WRONG_COMMAND;
 }
 
