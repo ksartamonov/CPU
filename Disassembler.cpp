@@ -236,6 +236,7 @@ int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int P
   {
     fprintf(disassembled_cmds, "MOV %d, [%d]\n", cmd2, cmd3); PC += 3; return PC;
   }
+  
   return WRONG_COMMAND;
 }
 

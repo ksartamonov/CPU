@@ -73,10 +73,7 @@ void Walk (int* RAM, int ArraySize, CPU_t* prc)
       PC = Command_Performer (RAM, PC, prc);
     }
 
-  for (int i = 0 ; i < ArraySize ; i ++)
-  {
-    printf("ARR[%d] = %d\n", i, RAM[i]);
-  }
+  
 }
 
 //------------------------------------------------------------------------------

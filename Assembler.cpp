@@ -527,7 +527,7 @@ int CommandMov(int* Assembled, int PC, char* command) // Для считыава
 
 
   if ( adr < sizeof(Assembled) )
-    std::cout << _PINK_ << "warning: \x1b[0m" << _BOLD_ << " command \x1b[0m" << _PINK_ << command << "\x1b[0m"  << _BOLD_ << " may change the program working.\n\x1b[0m";
+    std::cout << _PINK_ << "warning: " << _RESET_COLOUR << _BOLD_ << " command " << _RESET_COLOUR <<_PINK_ << command << _RESET_COLOUR  << _BOLD_ << " may change the program working.\n" << _RESET_COLOUR;
 
   free(val);
   free(adress);
