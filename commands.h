@@ -36,7 +36,8 @@ enum Commands {
   CMD_JNE      = 36, //
   CMD_CALL     = 40, // Jumps to fuction and uses callstack
   CMD_RET      = 50,  // returns to position from callstack
-  CMD_MOV      = 70 // uses RAM 
+  CMD_MOV      = 70, // uses RAM
+  CMD_VISUAL   = 128
 };
 
 
@@ -409,4 +410,55 @@ int DO_MOV(int* RAM, int value, int adress)
 
   return 1;
 }
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+int DO_DRAW (int cmd);
+
+int VIDEO_MEM (int* RAM)
+{
+  int length = 0;
+  for (int i = 0 ; i < VIDEOMEM_SIZE  ; i ++)
+  {
+    DO_DRAW( RAM[i + VIDEOMEM_START] );
+    length ++;
+
+    if (length % VIDEOMEM_LENGTH == 0)
+    {
+      std::cout << "\n";
+      length = 0;
+    }
+  }
+  return 1;
+}
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+int DO_DRAW (int cmd)
+{
+  if ( cmd == 0 )
+  {
+    std::cout <<  _BOLD_ << "*" << _RESET_COLOUR;
+    return 1;
+  }
+
+  if ( cmd == 1 )
+  {
+    std::cout <<  _RED_ << "*" << _RESET_COLOUR;
+    return 1;
+  }
+
+  if ( cmd == 2 )
+  {
+    std::cout <<  _GREEN_ << "*" << _RESET_COLOUR;
+    return 1;
+  }
+
+  if ( cmd == 3)
+  {
+    std::cout <<  _BLUE_ << "*" << _RESET_COLOUR;
+    return 1;
+  }
+}
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
 #endif  // COMMANDS_H

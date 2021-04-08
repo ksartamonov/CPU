@@ -274,6 +274,13 @@ if ( Mod_StringCompare(command, "MOV ", 4) == 1)
     PC = CommandMov(Assembled, PC, command);
     return PC;
   }
+
+if ( Mod_StringCompare(command, "VISUALIZE", 9) == 1)
+  {
+    *(Assembled + PC) = CMD_VISUAL;
+    PC++;
+    return PC;
+  }
 return WRONG_COMMAND;
 
 }

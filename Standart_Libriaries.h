@@ -7,6 +7,7 @@ const char* _GREEN_              = "\x1b[32;1m";
 const char* _LIGHT_BLUE_         = "\x1b[36;1m";
 const char* _YELLOW_             = "\x1b[36;1m";
 const char* _PINK_               = "\x1b[35;1m";
+const char* _BLUE_               = "\x1b[34;1m";
 const char* _RESET_COLOUR        = "\x1b[0m";
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -31,6 +32,10 @@ const int WRONG_FILE               = -2021;
 #include <assert.h>
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+const int VIDEOMEM_SIZE    = 500; //  <= 500
+const int VIDEOMEM_LENGTH  = 50;
+const int VIDEOMEM_START   = 500;
 
 //mov 1, [12]
 #endif // STANDART_LIBRIARIES_H

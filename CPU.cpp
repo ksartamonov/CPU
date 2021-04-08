@@ -53,7 +53,7 @@ int main (int argc, char* argv[])  // ./CPU #FileName#
 
   std::cout << _BOLD_ << "All operations from \x1b[0m" << _LIGHT_BLUE_ << argv[1] << " \x1b[0m" << _BOLD_ << "are done!" << "\n\x1b[0m";
 
-  free(RAM);
+  //free(RAM);
   return 0;
 }
 
@@ -73,7 +73,8 @@ void Walk (int* RAM, int ArraySize, CPU_t* prc)
       PC = Command_Performer (RAM, PC, prc);
     }
 
-  
+  VIDEO_MEM(RAM);
+
 }
 
 //------------------------------------------------------------------------------
@@ -148,6 +149,10 @@ int Command_Performer (int* asm_cmds, int pc, CPU_t* prc)
     pc += 2;
   }
 
+  if ( cmd1 == CMD_VISUAL)
+  {
+    VIDEO_MEM(asm_cmds);
+  }
   pc++;
   return pc;
 
