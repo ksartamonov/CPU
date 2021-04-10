@@ -412,23 +412,27 @@ int DO_MOV(int* RAM, int value, int adress)
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
 int DO_DRAW (int cmd);
 
 int VIDEO_MEM (int* RAM)
 {
-  int length = 0;
+
+  int cur_length = 0;
+
   for (int i = 0 ; i < VIDEOMEM_SIZE  ; i ++)
   {
     DO_DRAW( RAM[i + VIDEOMEM_START] );
-    length ++;
+    cur_length ++;
 
-    if (length % VIDEOMEM_LENGTH == 0)
+    if (cur_length == VIDEOMEM_LENGTH)
     {
       std::cout << "\n";
-      length = 0;
+      cur_length = 0;
     }
   }
-  return 1;
+
+  return 0;
 }
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -437,25 +441,25 @@ int DO_DRAW (int cmd)
 {
   if ( cmd == 0 )
   {
-    std::cout <<  _BOLD_ << "*" << _RESET_COLOUR;
+    std::cout <<  _BOLD_ << " " << _RESET_COLOUR;
     return 1;
   }
 
   if ( cmd == 1 )
   {
-    std::cout <<  _RED_ << "*" << _RESET_COLOUR;
+    std::cout <<  _RED_ << "█" << _RESET_COLOUR;
     return 1;
   }
 
   if ( cmd == 2 )
   {
-    std::cout <<  _GREEN_ << "*" << _RESET_COLOUR;
+    std::cout <<  _PINK_ << "█" << _RESET_COLOUR;
     return 1;
   }
 
   if ( cmd == 3)
   {
-    std::cout <<  _BLUE_ << "*" << _RESET_COLOUR;
+    std::cout <<  _BLUE_ << "█" << _RESET_COLOUR;
     return 1;
   }
 }

@@ -34,7 +34,7 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
 
   for (int i = 0; i < Lines_Amount; i ++)
   {
-    size_t Arr_Size = sizeof(P_Lines[i]);
+    size_t Arr_Size = strlen(P_Lines[i]);
     int new_PC = Command_Coder( P_Lines[i], Arr_Size, Assembled, PC, Labels, NLabels);
 
     if (new_PC == WRONG_COMMAND)
@@ -54,6 +54,7 @@ int* Assemble(char** P_Lines, int Lines_Amount, int* Assembled, label* Labels, i
   if (Errors_amount >  1) printf("%d errors generated.\n", Errors_amount);
   abort();
   }
+
   return Assembled;
 }
 
@@ -67,7 +68,6 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
     return NEED_NAME_OF_FILE;
   }
 
-//TODO: струткура, отвечающая за данные файла
 
   FILE* f = fopen(argv[1], "r");
   if (f == NULL)
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
 
   PutPointers (buf, SizeOfFile, P_Lines, Lines_Amount);
 
-  int* Assembled = (int*)calloc(2*Lines_Amount, sizeof(int));
+  int* Assembled = (int*)calloc(3*Lines_Amount, sizeof(int));
   assert(Assembled != NULL);
 
   int NumLabels = Labels_Amount(P_Lines, Lines_Amount);
@@ -97,7 +97,6 @@ int main(int argc, char* argv[]) //console cmd: ./main ToAssemble.txt
   Labels = Finding_Labels(P_Lines, Lines_Amount, Labels, NumLabels);
 
   Assembled = Assemble(P_Lines, Lines_Amount, Assembled, Labels, NumLabels);
-
 
   FILE* ASSEMBLED_CMDS = fopen("assembled_cmds.aks", "w");
 
@@ -281,6 +280,12 @@ if ( Mod_StringCompare(command, "VISUALIZE", 9) == 1)
     PC++;
     return PC;
   }
+
+if ( Mod_StringCompare(command, "#", 1) == 1)
+  {
+    PC++;
+    return PC;
+  }
 return WRONG_COMMAND;
 
 }
@@ -380,7 +385,7 @@ void AssembledDump (int* array, FILE* assembled_cmds, int SizeOfArray) // Печ
 {
   assert (array != NULL);
 
-    for (int i = 0 ; i < 2*SizeOfArray; i ++)
+    for (int i = 0 ; i < 3 * SizeOfArray; i ++)
     {
       if ( (array[i] != 0) || (array[i] == 0 && array[i+1] != 0 && array[i-1] != 0) )
       fprintf( assembled_cmds, "%d\n", array[i]);

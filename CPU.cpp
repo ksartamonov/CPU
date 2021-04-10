@@ -5,8 +5,7 @@
 void Walk (int* asm_cmds, int ArraySize, CPU_t* prc);
 int Command_Performer (int* asm_cmds, int pc, CPU_t* prc);
 
-int RAM[1024] = {};
-
+int RAM[RAM_SIZE] = {};
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 int main (int argc, char* argv[])  // ./CPU #FileName#
@@ -72,8 +71,6 @@ void Walk (int* RAM, int ArraySize, CPU_t* prc)
     {
       PC = Command_Performer (RAM, PC, prc);
     }
-
-  VIDEO_MEM(RAM);
 
 }
 
@@ -151,8 +148,13 @@ int Command_Performer (int* asm_cmds, int pc, CPU_t* prc)
 
   if ( cmd1 == CMD_VISUAL)
   {
+    std::cout << _LIGHT_BLUE_ << "VIDEOMEMORY VISUALIZATION:\n" << _RESET_COLOUR;
+    std::cout << _YELLOW_ << "########################################################################################################################\n" << _RESET_COLOUR ;
     VIDEO_MEM(asm_cmds);
+    std::cout << _YELLOW_ << "########################################################################################################################\n" << _RESET_COLOUR ;
+
   }
+
   pc++;
   return pc;
 

@@ -5,7 +5,7 @@ const char* _RED_                = "\x1b[31;1m";
 const char* _BOLD_               = "\x1b[1m";
 const char* _GREEN_              = "\x1b[32;1m";
 const char* _LIGHT_BLUE_         = "\x1b[36;1m";
-const char* _YELLOW_             = "\x1b[36;1m";
+const char* _YELLOW_             = "\x1b[33;1m";
 const char* _PINK_               = "\x1b[35;1m";
 const char* _BLUE_               = "\x1b[34;1m";
 const char* _RESET_COLOUR        = "\x1b[0m";
@@ -33,9 +33,7 @@ const int WRONG_FILE               = -2021;
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-const int VIDEOMEM_SIZE    = 500; //  <= 500
-const int VIDEOMEM_LENGTH  = 50;
-const int VIDEOMEM_START   = 500;
+
 
 //mov 1, [12]
 #endif // STANDART_LIBRIARIES_H
