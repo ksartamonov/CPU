@@ -81,7 +81,7 @@ int main(int argc, char* argv [])
     }
   }
 
-  int labels_amount = label_idx;
+  int labels_amount = label_idx; // Присваиваем количество последнему значению счетчика
   //printf("LABELS amount = %d\n", labels_amount);
   FILE* DISASSEMBLED_CMDS = fopen("disassembled_cmds.aks", "w");
 

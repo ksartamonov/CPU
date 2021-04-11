@@ -417,7 +417,8 @@ int DO_DRAW (int cmd);
 
 int VIDEO_MEM (int* RAM)
 {
-
+  assert(RAM);
+  
   int cur_length = 0;
 
   for (int i = 0 ; i < VIDEOMEM_SIZE  ; i ++)
