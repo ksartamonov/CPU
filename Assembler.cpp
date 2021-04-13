@@ -281,6 +281,13 @@ if ( Mod_StringCompare(command, "VISUALIZE", 9) == 1)
     return PC;
   }
 
+if ( Mod_StringCompare(command, "CIRCLE", 6) == 1)
+  {
+    *(Assembled + PC) = CMD_CIRCLE;
+    PC++;
+    return PC;
+  }
+
 if ( Mod_StringCompare(command, "#", 1) == 1)
   {
     PC++;

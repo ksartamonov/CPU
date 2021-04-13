@@ -7,6 +7,8 @@
 #include "CPU.h"
 #include "Stack.h"
 
+
+
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 enum Commands {
@@ -37,7 +39,8 @@ enum Commands {
   CMD_CALL     = 40, // Jumps to fuction and uses callstack
   CMD_RET      = 50,  // returns to position from callstack
   CMD_MOV      = 70, // uses RAM
-  CMD_VISUAL   = 128
+  CMD_VISUAL   = 128,
+  CMD_CIRCLE   = 100
 };
 
 
@@ -401,7 +404,7 @@ int DO_CALLSTACK_PUSH (CPU_t* proc, int IP)
 
 //------------------------------------------------------------------------------
 
-int DO_MOV(int* RAM, int value, int adress)
+int DO_MOV(int* RAM, const int value, const int adress)
 {
 
   assert(RAM);
@@ -413,12 +416,12 @@ int DO_MOV(int* RAM, int value, int adress)
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int DO_DRAW (int cmd);
+int DO_DRAW (const int cmd);
 
 int VIDEO_MEM (int* RAM)
 {
   assert(RAM);
-  
+
   int cur_length = 0;
 
   for (int i = 0 ; i < VIDEOMEM_SIZE  ; i ++)
@@ -438,7 +441,7 @@ int VIDEO_MEM (int* RAM)
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-int DO_DRAW (int cmd)
+int DO_DRAW (const int cmd)
 {
   if ( cmd == 0 )
   {
@@ -463,7 +466,23 @@ int DO_DRAW (int cmd)
     std::cout <<  _BLUE_ << "█" << _RESET_COLOUR;
     return 1;
   }
+
+  else
+    return -1;
 }
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+void DRAW_CIRCLE (int* RAM)
+{
+  int x_center = RAM[5001];
+  int y_center = RAM[5002];
+  int Radius        = RAM[5003];
+
+  for (int t = 0 ; t < 100; t ++)
+  {
+      // Параметрически нарисовать круг
+  }
+}
+
 
 #endif  // COMMANDS_H
