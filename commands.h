@@ -3,11 +3,11 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-
+#include <stdlib.h>
 #include "CPU.h"
 #include "Stack.h"
 
-
+int ConvertToRAM (int x, int y);
 
 //-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
@@ -40,7 +40,8 @@ enum Commands {
   CMD_RET      = 50,  // returns to position from callstack
   CMD_MOV      = 70, // uses RAM
   CMD_VISUAL   = 128,
-  CMD_CIRCLE   = 100
+  CMD_CIRCLE   = 100,
+  CMD_LINE     = 200
 };
 
 
@@ -476,13 +477,54 @@ void DRAW_CIRCLE (int* RAM)
 {
   int x_center = RAM[5001];
   int y_center = RAM[5002];
-  int Radius        = RAM[5003];
+  int R        = RAM[5003];
 
-  for (int t = 0 ; t < 100; t ++)
+  printf("RAM idx = %d\n", ConvertToRAM(x_center, y_center));
+
+  for (int t = 0 ; t < 1000; t ++)
   {
-      // Параметрически нарисовать круг
+  RAM[ ConvertToRAM(x_center , y_center)] = 3;
+  RAM[ ConvertToRAM( x_center + R*cos(t), y_center + R*sin(t) ) ] = 1;
   }
 }
 
 
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+int ConvertToRAM (int x, int y)
+{
+  return VIDEOMEM_START + x + VIDEOMEM_LENGTH * ((VIDEOMEM_SIZE / VIDEOMEM_LENGTH) - y);
+}
+
+//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+void DRAW_LINE(int* RAM)
+{
+  int x1 = RAM[5001];
+  int y1 = RAM[5002];
+  int x2 = RAM[5003];
+  int y2 = RAM[5004];
+
+  if ( x2 > x1)
+  {
+    int k = (y2-y1) / (x2-x1);
+    int b =  y1 - k * x1;
+  }
+  else
+  {
+    int k = (y1-y2) / (x1-x2);
+    int b =  y1 - k * x1;
+  }
+
+  RAM[ ConvertToRAM(x1 , y1)] = 3;
+  RAM[ ConvertToRAM(x2 , y2)] = 3;
+
+  // if ( b < 0 )
+  //   b = 0;
+  //else
+    for (int t = fmin(x1,x2); t < fmax(x1,x2); t++)
+    {
+      RAM[ConvertToRAM(t, k * t + b)] = 1;
+    }
+}
 #endif  // COMMANDS_H

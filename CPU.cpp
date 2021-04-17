@@ -159,6 +159,12 @@ int Command_Performer (int* asm_cmds, int pc, CPU_t* prc)
   {
     DRAW_CIRCLE(asm_cmds);
   }
+
+  if ( cmd1 == CMD_LINE)
+  {
+    DRAW_LINE(asm_cmds);
+  }
+
   pc++;
   return pc;
 

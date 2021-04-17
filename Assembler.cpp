@@ -288,6 +288,13 @@ if ( Mod_StringCompare(command, "CIRCLE", 6) == 1)
     return PC;
   }
 
+if ( Mod_StringCompare(command, "LINE", 4) == 1)
+  {
+    *(Assembled + PC) = CMD_LINE;
+    PC++;
+    return PC;
+  }
+
 if ( Mod_StringCompare(command, "#", 1) == 1)
   {
     PC++;

@@ -244,6 +244,11 @@ int Command_Decoder(int cmd1, int cmd2, int cmd3, FILE* disassembled_cmds, int P
     fprintf(disassembled_cmds, "CIRCLE\n"); PC ++; return PC;
   }
 
+  if ( cmd1 == CMD_LINE)
+  {
+    fprintf(disassembled_cmds, "LINE\n"); PC ++; return PC;
+  }
+
   return WRONG_COMMAND;
 }
 
